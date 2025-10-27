@@ -160,11 +160,14 @@ class AnalystOutput(BaseModel):
     correlation_adjustments: CorrelationAdjustment
     log_odds_posterior: float = Field(..., description="After evidence aggregation")
     p_bayesian: float = Field(..., ge=0.0, le=1.0, description="Final probability estimate")
+    p_bayesian_low: float = Field(..., ge=0.0, le=1.0, description="Lower bound of confidence interval")
+    p_bayesian_high: float = Field(..., ge=0.0, le=1.0, description="Upper bound of confidence interval")
+    confidence_level: float = Field(default=0.80, ge=0.0, le=1.0, description="Confidence level (e.g., 0.80 = 80% CI)")
     p_neutral: float = Field(..., ge=0.0, le=1.0, description="Uncertainty-adjusted estimate")
     sensitivity_analysis: List[SensitivityScenario] = Field(default_factory=list)
     calculation_steps: List[str] = Field(..., description="Step-by-step mathematical reasoning trace")
 
-    @field_validator('p_bayesian', 'p_neutral')
+    @field_validator('p_bayesian', 'p_neutral', 'p_bayesian_low', 'p_bayesian_high')
     @classmethod
     def clamp_extremes(cls, v: float) -> float:
         """Prevent probabilities too close to 0 or 1"""

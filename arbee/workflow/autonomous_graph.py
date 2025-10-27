@@ -479,11 +479,16 @@ def create_autonomous_polyseer_workflow(store: BaseStore = None) -> StateGraph:
     workflow.add_edge("arbitrage", "reporter")
     workflow.add_edge("reporter", END)
 
-    # Compile with checkpointing
+    # Compile with checkpointing and increased recursion limit
+    # The recursion limit needs to be higher than max possible iterations across all agents
+    # With 6 agents × max 20 iterations each + buffer = 150 is safe
     checkpointer = MemorySaver()
-    app = workflow.compile(checkpointer=checkpointer)
+    app = workflow.compile(
+        checkpointer=checkpointer,
+        debug=False  # Set to True for detailed graph execution logs
+    )
 
-    logger.info("✅ Autonomous workflow compiled successfully")
+    logger.info("✅ Autonomous workflow compiled successfully with recursion_limit=150")
 
     return app
 
@@ -551,8 +556,13 @@ async def run_autonomous_workflow(
         'context': kwargs
     }
 
-    # Execute workflow
-    config = {"configurable": {"thread_id": workflow_id}}
+    # Execute workflow with increased recursion limit
+    # Set high recursion limit to handle all agent iterations
+    # 6 agents × 20 max iterations + overhead = 150
+    config = {
+        "configurable": {"thread_id": workflow_id},
+        "recursion_limit": 150
+    }
 
     try:
         final_state = await app.ainvoke(initial_state, config)

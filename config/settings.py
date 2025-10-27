@@ -14,11 +14,27 @@ class Settings(BaseSettings):
     VALYU_API_KEY: str = ""
     ANTHROPIC_API_KEY: str = ""  # Optional, not currently used
 
-    # DATABASE
+    # DATABASE & MEMORY BACKEND
+    # =======================================
     SUPABASE_URL: str = ""
     SUPABASE_KEY: str = ""
     SUPABASE_ANON_KEY: str = ""  # Alias for SUPABASE_KEY
     SUPABASE_SERVICE_KEY: str = ""
+
+    # Alternative: Direct PostgreSQL connection
+    POSTGRES_URL: str = ""  # postgresql://user:pass@host:port/dbname
+
+    # Alternative: Redis for memory store
+    REDIS_URL: str = ""  # redis://host:port/db
+
+    # Memory Backend Configuration
+    MEMORY_BACKEND: str = "postgresql"  # "postgresql", "redis", or "memory"
+    ENABLE_MEMORY_PERSISTENCE: bool = True  # False = use in-memory store only
+
+    # Weaviate Vector Database (optional, for enhanced memory search)
+    WEAVIATE_URL: str = ""
+    WEAVIATE_API_KEY: str = ""
+    WEAVIATE_MARKETS_CLASS: str = "MarketAnalysisMemory"
 
     # TRADING API KEYS
     KALSHI_API_KEY_ID: str = ""

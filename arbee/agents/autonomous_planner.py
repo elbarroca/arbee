@@ -9,7 +9,6 @@ import logging
 from arbee.agents.autonomous_base import AutonomousReActAgent, AgentState
 from arbee.agents.schemas import PlannerOutput
 from arbee.tools.memory_search import search_similar_markets_tool, get_base_rates_tool
-from arbee.tools.output_validation import validate_planner_output_tool
 
 logger = logging.getLogger(__name__)
 
@@ -70,11 +69,14 @@ Create a structured research plan with:
 - Parse the market question
 - Identify key event and timeframe
 
-**Step 2: Estimate Simple Prior (0.3-0.7 recommended)**
-- Use your judgment to estimate a reasonable starting probability
-- Consider: Is this event common or rare? What's the base rate?
-- Avoid extremes (0.01-0.99 range, but 0.3-0.7 is best for uncertain events)
-- Write 1-2 sentence justification
+**Step 2: Estimate Prior with Base Rates (Optional)**
+- Optionally call get_base_rates_tool to find historical base rates
+  - Pass: event_category (e.g., "celebrity athletic challenges")
+  - Tool searches memory for stored base rates
+  - Returns: base_rate, confidence, sources
+- If base rates available, use them to inform your p0_prior
+- If no base rates found, use neutral prior (0.5) or reason from first principles
+- Document your reasoning in prior_justification field
 
 **Step 3: Generate Balanced Subclaims**
 - Create {self.min_subclaims}-{self.max_subclaims} specific, researchable subclaims
@@ -123,12 +125,12 @@ FINAL_PLAN_JSON:
 - Focus on QUALITY subclaims and search seeds
 - Your plan will be automatically validated after you output it
 
-## 🔍 Available Tools (Optional)
+## 🔍 Available Tools
 
-**search_similar_markets_tool**(query) - Find similar past analyses (optional, use if helpful)
-**get_base_rates_tool**(category) - Get base rates (optional, use if helpful)
+**search_similar_markets_tool**(query) - Find similar past analyses (optional)
+**get_base_rates_tool**(category) - Get historical base rates from memory (optional)
 
-You do NOT need to use these tools. Only use them if you think they'll meaningfully improve your plan.
+All tools are OPTIONAL - only use if helpful for informing your prior estimate.
 
 ## ✅ Quality Standards
 
@@ -140,7 +142,7 @@ Remember: Your job is to set up a GOOD research plan, not to do the research you
 """
 
     def get_tools(self) -> List[BaseTool]:
-        """Return planning tools (optional memory tools only)"""
+        """Return planning tools (optional memory tools)"""
         tools = []
 
         # Add memory tools if store configured (both are optional)
@@ -205,6 +207,7 @@ Remember: Your job is to set up a GOOD research plan, not to do the research you
 
         Criteria:
         - Has valid prior (0.01-0.99)
+        - Has prior justification
         - Has minimum subclaims
         - Has balanced pro/con subclaims
         - Has search seeds for all directions
@@ -213,6 +216,11 @@ Remember: Your job is to set up a GOOD research plan, not to do the research you
 
         # Check if we have a plan
         if 'p0_prior' not in results:
+            return False
+
+        # Check if prior justification exists
+        if 'prior_justification' not in results:
+            self.logger.info("Need prior justification")
             return False
 
         # Check prior range

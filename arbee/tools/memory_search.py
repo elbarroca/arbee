@@ -6,11 +6,19 @@ import logging
 import os
 from typing import List, Dict, Any, Optional
 
-import httpx
 from langchain_core.tools import tool
 from langgraph.store.base import SearchItem
 
 from arbee.utils.memory import get_memory_manager
+from config.system_constants import (
+    SEARCH_SIMILAR_MARKETS_LIMIT_DEFAULT,
+    SEARCH_SIMILAR_MARKETS_LIMIT_MAX,
+    SEARCH_HISTORICAL_EVIDENCE_LIMIT_DEFAULT,
+    GET_BASE_RATES_LIMIT_DEFAULT,
+    NAMESPACE_KNOWLEDGE_BASE,
+    NAMESPACE_EPISODE_MEMORY,
+    NAMESPACE_STRATEGIES
+)
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +26,7 @@ logger = logging.getLogger(__name__)
 @tool
 async def search_similar_markets_tool(
     market_question: str,
-    limit: int = 5
+    limit: int = SEARCH_SIMILAR_MARKETS_LIMIT_DEFAULT
 ) -> List[Dict[str, Any]]:
     """
     Search for similar market questions analyzed in the past.
@@ -42,7 +50,7 @@ async def search_similar_markets_tool(
     try:
         logger.info(f"🔍 Searching for similar markets to: '{market_question[:60]}'")
 
-        limit = max(1, min(limit, 20))
+        limit = max(1, min(limit, SEARCH_SIMILAR_MARKETS_LIMIT_MAX))
 
         store_results = await _search_similar_markets_in_store(
             query=market_question,
@@ -51,14 +59,7 @@ async def search_similar_markets_tool(
         if store_results:
             return store_results
 
-        weaviate_results = await _search_similar_markets_in_weaviate(
-            query=market_question,
-            limit=limit
-        )
-        if weaviate_results:
-            return weaviate_results
-
-        logger.info("No similar markets found via LangGraph store or Weaviate")
+        logger.info("No similar markets found in LangGraph store")
         return []
 
     except Exception as e:
@@ -70,7 +71,7 @@ async def search_similar_markets_tool(
 async def search_historical_evidence_tool(
     topic: str,
     evidence_type: Optional[str] = None,
-    limit: int = 10
+    limit: int = SEARCH_HISTORICAL_EVIDENCE_LIMIT_DEFAULT
 ) -> List[Dict[str, Any]]:
     """
     Search historical evidence database for relevant past findings.
@@ -93,12 +94,55 @@ async def search_historical_evidence_tool(
     try:
         logger.info(f"🔍 Searching historical evidence: '{topic[:60]}'")
 
-        # TODO: Implement vector/keyword search in evidence database
-        # Placeholder for now
+        memory_manager = get_memory_manager()
+        store = getattr(memory_manager, "store", None)
 
-        logger.warning("⚠️  Historical evidence search not yet implemented")
+        if not store:
+            logger.debug("No LangGraph store configured; cannot search historical evidence")
+            return []
 
-        return []
+        # Build filter
+        filter_dict = {"content_type": "evidence_item"}
+        if evidence_type:
+            filter_dict["evidence_type"] = evidence_type
+
+        # Search knowledge base namespace for evidence
+        try:
+            search_results = await store.asearch(
+                (NAMESPACE_KNOWLEDGE_BASE,),
+                query=topic,
+                filter=filter_dict,
+                limit=limit
+            )
+        except Exception as err:
+            logger.warning(f"LangGraph store search failed: {err}")
+            return []
+
+        # Parse results
+        evidence_list = []
+        for item in search_results:
+            value = item.value or {}
+            content = value.get("content")
+
+            # Extract evidence details
+            if isinstance(content, dict):
+                evidence_item = {
+                    "id": value.get("id") or item.key,
+                    "title": content.get("title", "Unknown"),
+                    "url": content.get("url", ""),
+                    "llr": content.get("LLR", 0.0),
+                    "verifiability": content.get("verifiability_score", 0.5),
+                    "independence": content.get("independence_score", 0.8),
+                    "recency": content.get("recency_score", 0.7),
+                    "support": content.get("support", "neutral"),
+                    "claim_summary": content.get("claim_summary", ""),
+                    "stored_at": item.updated_at.isoformat() if item.updated_at else "",
+                    "relevance_score": item.score
+                }
+                evidence_list.append(evidence_item)
+
+        logger.info(f"✅ Found {len(evidence_list)} historical evidence items for '{topic[:40]}'")
+        return evidence_list
 
     except Exception as e:
         logger.error(f"❌ Historical evidence search failed: {e}")
@@ -108,7 +152,8 @@ async def search_historical_evidence_tool(
 @tool
 async def get_base_rates_tool(
     event_category: str,
-    time_range: Optional[str] = None
+    time_range: Optional[str] = None,
+    limit: int = GET_BASE_RATES_LIMIT_DEFAULT
 ) -> Dict[str, Any]:
     """
     Retrieve historical base rates for event category.
@@ -129,22 +174,66 @@ async def get_base_rates_tool(
     try:
         logger.info(f"📊 Looking up base rates for: '{event_category}'")
 
-        # TODO: Implement base rate lookup from knowledge base
-        # Could use Wikipedia, historical databases, etc.
+        memory_manager = get_memory_manager()
+        store = getattr(memory_manager, "store", None)
 
-        logger.warning("⚠️  Base rates lookup not yet implemented")
+        if store:
+            # Search knowledge base for stored base rates
+            try:
+                filter_dict = {"content_type": "base_rate"}
+                if time_range:
+                    filter_dict["time_range"] = time_range
 
+                search_results = await store.asearch(
+                    (NAMESPACE_KNOWLEDGE_BASE,),
+                    query=event_category,
+                    filter=filter_dict,
+                    limit=limit
+                )
+
+                # If we found stored base rates, aggregate them
+                if search_results and len(search_results) > 0:
+                    rates = []
+                    sources = []
+                    for item in search_results:
+                        value = item.value or {}
+                        content = value.get("content")
+                        if isinstance(content, dict):
+                            rate = content.get("base_rate")
+                            if rate and 0.0 <= rate <= 1.0:
+                                rates.append(rate)
+                                sources.append(content.get("source", "Unknown"))
+
+                    if rates:
+                        # Aggregate by averaging (could use weighted average based on sample sizes)
+                        avg_rate = sum(rates) / len(rates)
+                        logger.info(f"✅ Found {len(rates)} stored base rates, average: {avg_rate:.2%}")
+
+                        return {
+                            'event_category': event_category,
+                            'base_rate': avg_rate,
+                            'sample_size': len(rates),
+                            'confidence': 'moderate' if len(rates) >= 3 else 'low',
+                            'sources': sources[:3],
+                            'note': f'Aggregated from {len(rates)} historical analyses'
+                        }
+
+            except Exception as err:
+                logger.warning(f"Store search failed: {err}")
+
+        # No stored base rates found - return neutral prior
+        logger.info(f"📡 No stored base rates found for '{event_category}', using neutral prior")
         return {
             'event_category': event_category,
-            'base_rate': 0.5,  # Default
+            'base_rate': 0.5,
             'sample_size': 0,
             'confidence': 'low',
-            'note': 'Base rates lookup not implemented yet'
+            'note': 'No stored base rate data found, using neutral 50% prior'
         }
 
     except Exception as e:
         logger.error(f"❌ Base rates lookup failed: {e}")
-        return {'error': str(e), 'base_rate': 0.5}
+        return {'error': str(e), 'base_rate': 0.5, 'confidence': 'low'}
 
 
 @tool
@@ -178,11 +267,49 @@ async def store_successful_strategy_tool(
     try:
         logger.info(f"💾 Storing successful strategy: {strategy_type}")
 
-        # TODO: Store in LangGraph Store for cross-session learning
+        memory_manager = get_memory_manager()
+        store = getattr(memory_manager, "store", None)
 
-        logger.warning("⚠️  Strategy storage not yet implemented")
+        if not store:
+            logger.warning("No LangGraph store configured; cannot store strategy")
+            return False
 
-        return False
+        # Validate effectiveness
+        if not (0.0 <= effectiveness <= 1.0):
+            logger.warning(f"Invalid effectiveness {effectiveness}, clamping to [0, 1]")
+            effectiveness = max(0.0, min(1.0, effectiveness))
+
+        # Prepare strategy data
+        strategy_data = {
+            "content_type": "strategy",
+            "strategy_type": strategy_type,
+            "description": description,
+            "effectiveness": effectiveness,
+            "stored_at": "current_session",
+            "metadata": metadata or {}
+        }
+
+        # Generate unique key
+        import hashlib
+        import time
+        key_str = f"{strategy_type}_{description[:30]}_{time.time()}"
+        key_hash = hashlib.md5(key_str.encode()).hexdigest()[:12]
+        key = f"strategy_{key_hash}"
+
+        # Store in strategies namespace
+        try:
+            await store.aput(
+                NAMESPACE_STRATEGIES,
+                key,
+                strategy_data
+            )
+
+            logger.info(f"✅ Stored strategy '{strategy_type}' with effectiveness {effectiveness:.1%}")
+            return True
+
+        except Exception as err:
+            logger.error(f"Failed to store in LangGraph store: {err}")
+            return False
 
     except Exception as e:
         logger.error(f"❌ Strategy storage failed: {e}")
@@ -213,7 +340,7 @@ async def _search_similar_markets_in_store(
     try:
         # Primary namespace for long-term knowledge
         search_results = await store.asearch(
-            ("knowledge_base",),
+            (NAMESPACE_KNOWLEDGE_BASE,),
             query=query,
             filter={"content_type": "market_analysis"},
             limit=limit
@@ -229,103 +356,6 @@ async def _search_similar_markets_in_store(
     ]
 
     return parsed[:limit]
-
-
-async def _search_similar_markets_in_weaviate(
-    query: str,
-    limit: int
-) -> List[Dict[str, Any]]:
-    """
-    Query a Weaviate instance for similar market analyses using hybrid search.
-    Falls back silently if Weaviate is not configured.
-    """
-    endpoint = os.getenv("WEAVIATE_URL") or os.getenv("WEAVIATE_ENDPOINT")
-    if not endpoint:
-        return []
-
-    class_name = os.getenv("WEAVIATE_MARKETS_CLASS", "MarketAnalysisMemory")
-    api_key = os.getenv("WEAVIATE_API_KEY") or os.getenv("WCS_API_KEY")
-
-    headers = {"Content-Type": "application/json"}
-    if api_key:
-        headers["Authorization"] = api_key if api_key.startswith("Bearer ") else f"Bearer {api_key}"
-
-    openai_key = os.getenv("OPENAI_API_KEY")
-    if openai_key and "X-OpenAI-Api-Key" not in headers:
-        headers["X-OpenAI-Api-Key"] = openai_key
-
-    graphql = (
-        "query GetSimilarMarkets($query: String!, $limit: Int!) {{"
-        "  Get {{"
-        "    {class_name}("
-        "      limit: $limit"
-        "      hybrid: {{ query: $query, alpha: 0.35 }}"
-        "    ) {{"
-        "      id"
-        "      question"
-        "      market_question"
-        "      prior"
-        "      posterior"
-        "      outcome"
-        "      summary"
-        "      market_url"
-        "      metadata"
-        "      _additional {{ score }}"
-        "    }}"
-        "  }}"
-        "}}"
-    ).format(class_name=class_name)
-
-    payload = {"query": graphql, "variables": {"query": query, "limit": limit}}
-
-    try:
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            response = await client.post(
-                f"{endpoint.rstrip('/')}/v1/graphql",
-                json=payload,
-                headers=headers
-            )
-            response.raise_for_status()
-    except Exception as exc:
-        logger.debug(f"Weaviate search failed: {exc}")
-        return []
-
-    try:
-        data = response.json()
-    except ValueError as exc:
-        logger.debug(f"Failed to decode Weaviate response: {exc}")
-        return []
-
-    hits = data.get("data", {}).get("Get", {}).get(class_name, []) or []
-    results: List[Dict[str, Any]] = []
-
-    for node in hits:
-        question = node.get("market_question") or node.get("question")
-        if not question:
-            continue
-
-        item: Dict[str, Any] = {
-            "id": node.get("id"),
-            "question": question,
-            "prior": node.get("prior"),
-            "posterior": node.get("posterior"),
-            "outcome": node.get("outcome"),
-            "summary": node.get("summary"),
-            "market_url": node.get("market_url"),
-        }
-
-        metadata = node.get("metadata")
-        if isinstance(metadata, dict) and metadata:
-            item["metadata"] = metadata
-
-        additional = node.get("_additional") or {}
-        score = additional.get("score")
-        if score is not None:
-            item["score"] = score
-
-        results.append(item)
-
-    return results[:limit]
 
 
 def _parse_market_search_item(item: SearchItem) -> Optional[Dict[str, Any]]:

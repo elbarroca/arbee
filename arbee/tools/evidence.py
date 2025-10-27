@@ -72,6 +72,136 @@ class ExtractedEvidence(BaseModel):
 
 
 @tool
+async def extract_evidence_with_multi_rater_validation(
+    search_result: Dict[str, Any],
+    subclaim: str,
+    market_question: str,
+    num_raters: int = 3
+) -> Optional[ExtractedEvidence]:
+    """
+    Extract structured evidence with multi-rater validation to reduce variance.
+
+    This tool extracts evidence multiple times with different LLM temperatures
+    and averages the LLR estimates to reduce subjective judgment variance.
+
+    Args:
+        search_result: Dict with 'title', 'url', 'content/snippet', 'published_date'
+        subclaim: The specific subclaim this evidence relates to
+        market_question: The main market question for context
+        num_raters: Number of independent extractions (default 3)
+
+    Returns:
+        ExtractedEvidence with averaged LLR and confidence score
+
+    Example:
+        >>> evidence = await extract_evidence_with_multi_rater_validation(result, subclaim, question)
+        >>> print(f"LLR: {evidence.estimated_LLR:.2f} ± {evidence.extraction_notes}")
+    """
+    try:
+        logger.info(f"🔬 Multi-rater extraction from: {search_result.get('title', 'Unknown')[:60]}")
+
+        # Extract basic fields
+        title = search_result.get('title', 'N/A')
+        url = search_result.get('url', '')
+        content = search_result.get('content', search_result.get('snippet', ''))
+        published_date = search_result.get('published_date', '')
+
+        # Skip only if completely empty
+        if not content:
+            logger.debug("No content found, skipping")
+            return None
+
+        # Let LLM judge relevance - removed strict keyword filtering
+
+        # Assess source type (same for all raters)
+        source_type = assess_source_type(url, title)
+        verifiability_score = calculate_verifiability(content, source_type)
+        independence_score = 0.8
+        recency_score = calculate_recency_score(published_date)
+
+        # Run multiple extractions with different temperatures
+        temperatures = [0.0, 0.3, 0.6][:num_raters]
+        llm_analyses = []
+
+        for temp in temperatures:
+            try:
+                analysis = await analyze_evidence_with_llm(
+                    content=content,
+                    title=title,
+                    subclaim=subclaim,
+                    market_question=market_question,
+                    source_type=source_type,
+                    verifiability=verifiability_score,
+                    published_date=published_date,
+                    temperature=temp
+                )
+                llm_analyses.append(analysis)
+            except Exception as e:
+                logger.warning(f"Extraction failed at temp={temp}: {e}")
+
+        if not llm_analyses:
+            logger.error("All extractions failed")
+            return None
+
+        # Aggregate results
+        import numpy as np
+
+        llrs = [a['estimated_LLR'] for a in llm_analyses]
+        supports = [a['support'] for a in llm_analyses]
+        summaries = [a['summary'] for a in llm_analyses]
+
+        # Average LLR
+        mean_llr = float(np.mean(llrs))
+        std_llr = float(np.std(llrs)) if len(llrs) > 1 else 0.0
+
+        # Majority vote on support direction
+        from collections import Counter
+        support_counts = Counter(supports)
+        support = support_counts.most_common(1)[0][0]
+
+        # Use first summary (or could combine)
+        claim_summary = summaries[0]
+
+        # Clamp LLR to source range
+        estimated_LLR = clamp_llr_to_source_range(mean_llr, source_type)
+
+        # Build extraction notes with confidence info
+        llr_confidence = 1.0 - min(std_llr / (abs(mean_llr) + 0.1), 1.0) if mean_llr != 0 else 0.5
+        extraction_notes = (
+            f"Multi-rater validated (n={len(llm_analyses)}): "
+            f"LLR={mean_llr:+.2f}±{std_llr:.2f}, "
+            f"confidence={llr_confidence:.2f}, "
+            f"source={source_type}"
+        )
+
+        evidence = ExtractedEvidence(
+            subclaim_id=subclaim,
+            title=title[:800],
+            url=url,
+            published_date=published_date or "unknown",
+            source_type=source_type,
+            claim_summary=claim_summary,
+            support=support,
+            verifiability_score=verifiability_score,
+            independence_score=independence_score,
+            recency_score=recency_score,
+            estimated_LLR=estimated_LLR,
+            extraction_notes=extraction_notes
+        )
+
+        logger.info(
+            f"✅ Multi-rater evidence: LLR={estimated_LLR:+.2f}±{std_llr:.2f}, "
+            f"support={support}, confidence={llr_confidence:.2f}"
+        )
+
+        return evidence
+
+    except Exception as e:
+        logger.error(f"❌ Multi-rater extraction failed: {e}")
+        return None
+
+
+@tool
 async def extract_evidence_tool(
     search_result: Dict[str, Any],
     subclaim: str,
@@ -107,13 +237,13 @@ async def extract_evidence_tool(
         content = search_result.get('content', search_result.get('snippet', ''))
         published_date = search_result.get('published_date', '')
 
-        if not content or len(content) < 20:
-            logger.warning("Content too short, skipping")
+        # Skip only if completely empty
+        if not content:
+            logger.debug("No content found, skipping")
             return None
 
-        if not is_relevant_to_subclaim(title, content, subclaim, market_question):
-            logger.info("Content deemed irrelevant to subclaim; skipping evidence extraction")
-            return None
+        # Let LLM judge relevance - removed strict keyword filtering
+        # All search results passed to LLM for relevance analysis
 
         # Assess source type from URL/title
         source_type = assess_source_type(url, title)
@@ -286,12 +416,16 @@ async def analyze_evidence_with_llm(
     market_question: str,
     source_type: str,
     verifiability: Optional[float] = None,
-    published_date: str = ""
+    published_date: str = "",
+    temperature: Optional[float] = None
 ) -> Dict[str, Any]:
     """
     Analyze evidence content with an LLM to determine support direction and LLR.
 
     Falls back to heuristic analysis if the OpenAI key is unavailable or the LLM call fails.
+
+    Args:
+        temperature: Optional temperature override for LLM (default from settings)
     """
     if not app_settings.OPENAI_API_KEY:
         logger.warning("OPENAI_API_KEY missing; falling back to heuristic evidence analysis")
@@ -303,11 +437,13 @@ async def analyze_evidence_with_llm(
         )
 
     model_name = getattr(app_settings, "EVIDENCE_LLM_MODEL", DEFAULT_EVIDENCE_MODEL) or DEFAULT_EVIDENCE_MODEL
-    temperature_value = getattr(app_settings, "EVIDENCE_LLM_TEMPERATURE", DEFAULT_EVIDENCE_TEMPERATURE)
-    try:
-        temperature = float(temperature_value)
-    except (TypeError, ValueError):
-        temperature = DEFAULT_EVIDENCE_TEMPERATURE
+
+    if temperature is None:
+        temperature_value = getattr(app_settings, "EVIDENCE_LLM_TEMPERATURE", DEFAULT_EVIDENCE_TEMPERATURE)
+        try:
+            temperature = float(temperature_value)
+        except (TypeError, ValueError):
+            temperature = DEFAULT_EVIDENCE_TEMPERATURE
 
     try:
         llm = _get_cached_llm(model_name, temperature)
@@ -705,86 +841,6 @@ def _text_contains_any_term(text: str, terms: Set[str]) -> bool:
             return True
     return False
 
-
-def is_relevant_to_subclaim(title: str, content: str, subclaim: str, market_question: str) -> bool:
-    """Heuristically determine whether evidence text relates to the subclaim."""
-    combined_text = _normalize_for_matching(f"{title} {content}")
-    lower_subclaim = subclaim.lower()
-
-    raw_subject_terms, expanded_subject_terms = _extract_subject_terms(market_question)
-    subclaim_keywords = extract_keywords(subclaim)
-    subject_reference_present = bool(raw_subject_terms & subclaim_keywords)
-
-    if subject_reference_present and expanded_subject_terms:
-        if not _text_contains_any_term(combined_text, expanded_subject_terms):
-            return False
-
-    if not subclaim_keywords:
-        return True
-
-    # Require numeric/time thresholds in sources when subclaim specifies them
-    numeric_terms = re.findall(r'\d+(?:\.\d+)?', lower_subclaim)
-    composite_terms = re.findall(
-        r'\d+(?:\.\d+)?\s*(?:minutes?|minute|seconds?|second|hours?|hour|k|km|kilometers?|kilometres?|miles?|mile|percent|%)',
-        lower_subclaim
-    )
-    compact_terms = re.findall(r'\b\d+(?:\.\d+)?[a-z]+\b', lower_subclaim)
-
-    if numeric_terms or composite_terms or compact_terms:
-        numeric_hit = False
-
-        def _variants(term: str) -> List[str]:
-            cleaned = term.strip()
-            if not cleaned:
-                return []
-            variants = {
-                cleaned,
-                cleaned.replace(" ", ""),
-                cleaned.replace(" ", "-"),
-                cleaned.replace(" ", "_")
-            }
-            return [variant for variant in variants if variant]
-
-        for term in composite_terms + compact_terms:
-            for variant in _variants(term):
-                if variant and variant in combined_text:
-                    numeric_hit = True
-                    break
-            if numeric_hit:
-                break
-
-        if not numeric_hit:
-            for num in numeric_terms:
-                # Check raw number, "under <num>", and "<num> minute" patterns
-                number_pattern = rf"\b{re.escape(num)}\b"
-                if re.search(number_pattern, combined_text):
-                    numeric_hit = True
-                    break
-                if re.search(rf"\bunder\s+{re.escape(num)}", combined_text):
-                    numeric_hit = True
-                    break
-                if re.search(rf"{re.escape(num)}\s*(?:minutes?|minute|seconds?|second|k|km|miles?|mile)", combined_text):
-                    numeric_hit = True
-                    break
-
-        if not numeric_hit:
-            return False
-
-    overlap = sum(1 for keyword in subclaim_keywords if keyword in combined_text)
-    if not overlap:
-        return False
-
-    # Require at least one meaningful keyword beyond generic running terms
-    generic_terms = {
-        "running", "runner", "fitness", "times", "marathon", "minutes", "training",
-        "weather", "climate", "health", "issues", "average"
-    }
-    meaningful_overlap = sum(
-        1 for keyword in subclaim_keywords
-        if keyword in combined_text and keyword not in generic_terms
-    )
-
-    return meaningful_overlap > 0 or overlap >= 2
 
 # Known sources database (expand this in production)
 KNOWN_SOURCES = {

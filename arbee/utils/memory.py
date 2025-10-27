@@ -9,6 +9,8 @@ import logging
 
 from langgraph.store.base import BaseStore
 from langgraph.checkpoint.base import BaseCheckpointSaver
+from langgraph.store.postgres import PostgresStore
+import nest_asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -172,10 +174,9 @@ class MemoryManager:
 
             # Store in LangGraph Store
             await self.store.aput(
-                namespace="episode_memory",
-                key=f"{episode_id}:{memory_type}:{datetime.utcnow().isoformat()}",
-                value=item.model_dump(),
-                metadata={"episode_id": episode_id, "memory_type": memory_type}
+                ("episode_memory",),
+                f"{episode_id}:{memory_type}:{datetime.utcnow().isoformat()}",
+                item.model_dump()
             )
 
             logger.info(f"💾 Episode memory: {memory_type} for {market_question[:50]}")
@@ -212,8 +213,8 @@ class MemoryManager:
             # In production, use vector search on market questions
 
             results = await self.store.asearch(
+                ("episode_memory",),
                 query=market_question,
-                namespace="episode_memory",
                 limit=limit
             )
 
@@ -271,10 +272,9 @@ class MemoryManager:
             #     item.embedding = await self.generate_embedding(str(content))
 
             await self.store.aput(
-                namespace="knowledge_base",
-                key=knowledge_id,
-                value=item.model_dump(),
-                metadata={"content_type": content_type}
+                ("knowledge_base",),
+                knowledge_id,
+                item.model_dump()
             )
 
             logger.info(f"💾 Knowledge: {content_type}")
@@ -308,8 +308,8 @@ class MemoryManager:
         try:
             # TODO: Use vector search when embeddings are implemented
             results = await self.store.asearch(
+                ("knowledge_base",),
                 query=query,
-                namespace="knowledge_base",
                 limit=limit
             )
 
@@ -391,6 +391,130 @@ class MemoryManager:
             return None
 
 
+def create_store_from_config(
+    settings: Optional[Any] = None
+) -> Optional[BaseStore]:
+    """
+    Create and initialize LangGraph Store from configuration
+
+    Supports multiple backends:
+    - PostgreSQL (recommended for production, works with Supabase)
+    - Redis (fast, requires Redis server)
+    - In-Memory (testing only, not persistent)
+
+    Args:
+        settings: Optional Settings instance (defaults to global settings)
+
+    Returns:
+        Initialized BaseStore instance, or None if persistence disabled
+    """
+    # Import settings if not provided
+    if settings is None:
+        try:
+            from config.settings import settings as global_settings
+            settings = global_settings
+        except ImportError:
+            logger.warning("Could not import settings, using in-memory store")
+            from langgraph.store.memory import InMemoryStore
+            return InMemoryStore()
+
+    # Check if persistence is enabled
+    if not getattr(settings, 'ENABLE_MEMORY_PERSISTENCE', True):
+        logger.info("Memory persistence disabled, using InMemoryStore")
+        from langgraph.store.memory import InMemoryStore
+        return InMemoryStore()
+
+    # Get backend type
+    backend = getattr(settings, 'MEMORY_BACKEND', 'postgresql').lower()
+
+    # PostgreSQL / Supabase Backend
+    if backend == 'postgresql':
+        try:
+            # Try POSTGRES_URL first, then construct from Supabase
+            postgres_url = getattr(settings, 'POSTGRES_URL', '')
+
+            if not postgres_url:
+                # Construct from Supabase settings
+                supabase_url = getattr(settings, 'SUPABASE_URL', '')
+                supabase_key = getattr(settings, 'SUPABASE_SERVICE_KEY', '') or getattr(settings, 'SUPABASE_KEY', '')
+
+                if supabase_url and supabase_key:
+                    # Convert Supabase URL to PostgreSQL connection string
+                    # Format: postgresql://postgres:[PASSWORD]@[HOST]/postgres
+                    # Supabase URL format: https://[PROJECT_REF].supabase.co
+                    import re
+                    project_ref_match = re.search(r'https://([a-zA-Z0-9-]+)\.supabase\.co', supabase_url)
+
+                    if project_ref_match:
+                        project_ref = project_ref_match.group(1)
+                        # Supabase PostgreSQL host format
+                        postgres_host = f"db.{project_ref}.supabase.co"
+                        postgres_url = f"postgresql://postgres:{supabase_key}@{postgres_host}:5432/postgres"
+                        logger.info(f"Constructed PostgreSQL URL from Supabase settings")
+                    else:
+                        logger.warning("Could not parse Supabase URL format")
+
+            if postgres_url:
+                logger.info(f"Initializing PostgresStore with connection string")
+                logger.info(f"Connection string format: postgresql://postgres:***@{postgres_url.split('@')[1] if '@' in postgres_url else 'unknown'}")
+
+                # PostgresStore needs proper async initialization
+                try:
+                    import asyncio
+
+                    # Test connection first
+                    try:
+                        import psycopg
+                        test_conn = psycopg.connect(postgres_url, autocommit=True)
+                        test_conn.close()
+                        logger.info("✅ PostgreSQL connection test successful")
+                    except Exception as conn_err:
+                        logger.error(f"❌ PostgreSQL connection test failed: {conn_err}")
+                        logger.error(f"   Check your SUPABASE_URL and SUPABASE_SERVICE_KEY in .env")
+                        logger.error(f"   Expected format: SUPABASE_URL=https://xxxxx.supabase.co")
+                        raise
+
+                    # Create store using connection string directly
+                    # LangGraph's PostgresStore.from_conn_string() handles the pool internally
+                    store = PostgresStore.from_conn_string(postgres_url)
+
+                    # Setup schema (create tables if they don't exist)
+                    async def init_store():
+                        async with store:
+                            await store.setup()
+
+                    try:
+                        asyncio.run(init_store())
+                        logger.info("✅ PostgresStore initialized successfully with schema")
+                    except RuntimeError as runtime_err:
+                        # Already in an event loop, try nested approach
+                        logger.info("Already in event loop, using nest_asyncio...")
+                        nest_asyncio.apply()
+                        asyncio.run(init_store())
+                        logger.info("✅ PostgresStore initialized (nested event loop)")
+
+                    return store
+
+                except ImportError as import_err:
+                    logger.error(f"Missing dependencies: {import_err}")
+                    logger.error("Install with: pip install 'langgraph-checkpoint-postgres[pool]' psycopg[binary]")
+                except Exception as setup_err:
+                    logger.error(f"PostgresStore initialization failed: {setup_err}")
+                    logger.warning("Falling back to InMemoryStore")
+                    import traceback
+                    traceback.print_exc()
+
+        except ImportError as e:
+            logger.warning(f"PostgresStore not available: {e}. Install with: pip install langgraph-checkpoint-postgres")
+        except Exception as e:
+            logger.error(f"Failed to initialize PostgresStore: {e}")
+
+    # In-Memory Backend (default fallback)
+    logger.info("Using InMemoryStore (not persistent across restarts)")
+    from langgraph.store.memory import InMemoryStore
+    return InMemoryStore()
+
+
 # Singleton memory manager instance
 _memory_manager: Optional[MemoryManager] = None
 
@@ -403,17 +527,25 @@ def get_memory_manager(
     """
     Get or create memory manager singleton
 
+    If no store is provided, automatically creates one from settings using
+    create_store_from_config(). This ensures memory persistence works by default.
+
     Args:
         config: Memory configuration (only used on first call)
-        store: LangGraph Store instance (only used on first call)
+        store: LangGraph Store instance (only used on first call, auto-created if None)
         checkpointer: Checkpointer instance (only used on first call)
 
     Returns:
-        MemoryManager instance
+        MemoryManager instance with initialized store
     """
     global _memory_manager
 
     if _memory_manager is None:
+        # Auto-create store from config if not provided
+        if store is None:
+            logger.info("No store provided, auto-initializing from settings...")
+            store = create_store_from_config()
+
         _memory_manager = MemoryManager(config=config, store=store, checkpointer=checkpointer)
 
     return _memory_manager

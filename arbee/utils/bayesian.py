@@ -6,6 +6,18 @@ import math
 from typing import List, Dict, Any, Tuple
 import numpy as np
 from config.settings import settings
+from config.system_constants import (
+    PROB_CLAMP_MIN,
+    PROB_CLAMP_MAX,
+    POSTERIOR_CLAMP_MIN,
+    POSTERIOR_CLAMP_MAX,
+    MIN_RECENCY_WEIGHT,
+    SENSITIVITY_LLR_MULTIPLIERS,
+    SENSITIVITY_WEAKEST_REMOVAL_PCT,
+    DEFAULT_VERIFIABILITY_SCORE,
+    DEFAULT_INDEPENDENCE_SCORE,
+    DEFAULT_RECENCY_SCORE
+)
 
 
 class BayesianCalculator:
@@ -31,7 +43,7 @@ class BayesianCalculator:
             Log-odds value
         """
         # Clamp to avoid division by zero
-        p = max(min(p, 0.9999), 0.0001)
+        p = max(min(p, PROB_CLAMP_MAX), PROB_CLAMP_MIN)
         return math.log(p / (1 - p))
 
     @staticmethod
@@ -69,8 +81,17 @@ class BayesianCalculator:
 
         Returns:
             Adjusted LLR
+
+        Note:
+            Recency is treated as a bonus, not a penalty. Even older evidence
+            gets at least MIN_RECENCY_WEIGHT (60%) to avoid over-discounting
+            valuable evidence. This prevents the system from under-reacting to
+            genuine strong evidence just because it's not brand new.
         """
-        weight = verifiability * independence * recency
+        # Make recency a bonus, not a strict penalty
+        # Even old evidence gets minimum weight
+        recency_adjusted = max(recency, MIN_RECENCY_WEIGHT)
+        weight = verifiability * independence * recency_adjusted
         return llr * weight
 
     @staticmethod
@@ -99,7 +120,7 @@ class BayesianCalculator:
         cls,
         prior_p: float,
         evidence_items: List[Dict[str, Any]],
-        correlation_clusters: List[List[int]] = None
+        correlation_clusters: List[List[Any]] = None
     ) -> Dict[str, Any]:
         """
         Aggregate evidence using Bayesian updating
@@ -108,7 +129,8 @@ class BayesianCalculator:
             prior_p: Prior probability (0-1)
             evidence_items: List of dicts with keys:
                 {LLR, verifiability, independence, recency, id}
-            correlation_clusters: Optional list of correlated evidence indices
+            correlation_clusters: Optional list of correlated evidence (IDs or indices)
+                Can be List[List[str]] (evidence IDs) or List[List[int]] (indices)
 
         Returns:
             Dict with posterior probability and details
@@ -120,11 +142,17 @@ class BayesianCalculator:
         adjusted_llrs = []
         evidence_summary = []
 
+        # Build ID -> index mapping for cluster resolution
+        id_to_index = {}
+        for i, item in enumerate(evidence_items):
+            item_id = item.get('id', f'evidence_{i}')
+            id_to_index[item_id] = i
+
         for i, item in enumerate(evidence_items):
             llr = item.get('LLR', 0.0)
-            verif = item.get('verifiability_score', item.get('verifiability', 1.0))
-            indep = item.get('independence_score', item.get('independence', 1.0))
-            recency = item.get('recency_score', item.get('recency', 1.0))
+            verif = item.get('verifiability_score', item.get('verifiability', DEFAULT_VERIFIABILITY_SCORE))
+            indep = item.get('independence_score', item.get('independence', DEFAULT_INDEPENDENCE_SCORE))
+            recency = item.get('recency_score', item.get('recency', DEFAULT_RECENCY_SCORE))
 
             # Adjust LLR by quality scores
             weight = verif * indep * recency
@@ -140,7 +168,23 @@ class BayesianCalculator:
 
         # Apply correlation adjustments
         if correlation_clusters:
-            for cluster_indices in correlation_clusters:
+            for cluster in correlation_clusters:
+                # Convert cluster to indices (handle both string IDs and integer indices)
+                cluster_indices = []
+                for item in cluster:
+                    if isinstance(item, int):
+                        # Already an index
+                        if 0 <= item < len(evidence_items):
+                            cluster_indices.append(item)
+                    elif isinstance(item, str):
+                        # Evidence ID - look up index
+                        if item in id_to_index:
+                            cluster_indices.append(id_to_index[item])
+                    # Skip invalid items
+
+                if not cluster_indices:
+                    continue  # Skip empty clusters
+
                 cluster_llrs = [adjusted_llrs[i] for i in cluster_indices]
                 shrunk_llrs = cls.apply_correlation_shrinkage(
                     cluster_llrs,
@@ -158,7 +202,7 @@ class BayesianCalculator:
         p_bayesian = cls.log_odds_to_prob(log_odds_posterior)
 
         # Clamp extreme probabilities
-        p_bayesian = max(min(p_bayesian, 0.99), 0.01)
+        p_bayesian = max(min(p_bayesian, POSTERIOR_CLAMP_MAX), POSTERIOR_CLAMP_MIN)
 
         return {
             'p0': prior_p,
@@ -188,26 +232,24 @@ class BayesianCalculator:
             List of scenario results
         """
         if scenarios is None:
-            scenarios = [
-                ('baseline', 1.0),
-                ('+25% LLR', 1.25),
-                ('-25% LLR', 0.75),
-                ('remove weakest 20%', None)  # Special case
+            scenarios = list(SENSITIVITY_LLR_MULTIPLIERS) + [
+                (f'remove weakest {int(SENSITIVITY_WEAKEST_REMOVAL_PCT * 100)}%', None)
             ]
 
         results = []
 
         for scenario_name, multiplier in scenarios:
-            if scenario_name == 'remove weakest 20%':
-                # Remove 20% weakest evidence by weight
+            if 'remove weakest' in scenario_name.lower():
+                # Remove weakest evidence by weight
                 sorted_items = sorted(
                     evidence_items,
-                    key=lambda x: x.get('verifiability_score', 1.0) *
-                                  x.get('independence_score', 1.0) *
-                                  x.get('recency_score', 1.0),
+                    key=lambda x: x.get('verifiability_score', DEFAULT_VERIFIABILITY_SCORE) *
+                                  x.get('independence_score', DEFAULT_INDEPENDENCE_SCORE) *
+                                  x.get('recency_score', DEFAULT_RECENCY_SCORE),
                     reverse=True
                 )
-                cutoff = int(len(sorted_items) * 0.8)
+                keep_fraction = 1.0 - SENSITIVITY_WEAKEST_REMOVAL_PCT
+                cutoff = int(len(sorted_items) * keep_fraction)
                 modified_items = sorted_items[:cutoff]
             else:
                 # Multiply all LLRs

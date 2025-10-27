@@ -27,7 +27,7 @@ async def bayesian_calculate_tool(
     correlation_clusters: List[List[str]] = None
 ) -> Dict[str, Any]:
     """
-    Perform Bayesian aggregation of evidence with correlation adjustments.
+    Perform Bayesian aggregation with VALIDATED evidence schema.
 
     Use this tool to calculate the posterior probability from a prior and evidence items.
     It handles LLR adjustments, correlation shrinkage, and sensitivity analysis.
@@ -39,6 +39,7 @@ async def bayesian_calculate_tool(
 
     Returns:
         Dict with p_bayesian, log_odds_prior, log_odds_posterior, evidence_summary, etc.
+        - evidence_summary: List[Dict] with keys ['id', 'LLR', 'weight', 'adjusted_LLR']
 
     Example:
         >>> result = await bayesian_calculate_tool(
@@ -51,14 +52,18 @@ async def bayesian_calculate_tool(
         >>> print(result['p_bayesian'])
     """
     try:
-        logger.info(f"🧮 Bayesian calculation: prior={prior_p:.2%}, {len(evidence_items)} evidence items")
+        logger.info(f"🧮 Bayesian calculation: prior={prior_p:.2%}, {len(evidence_items)} items")
 
         calculator = get_calculator()
 
+        # SCHEMA VALIDATION (NEW)
         normalized_items: List[Dict[str, Any]] = []
-        for item in evidence_items:
+        for idx, item in enumerate(evidence_items):
             if item is None:
+                logger.warning(f"Skipping None evidence item at index {idx}")
                 continue
+
+            # Convert to dict if needed
             if hasattr(item, "model_dump"):
                 normalized = item.model_dump()
             elif hasattr(item, "dict"):
@@ -66,9 +71,38 @@ async def bayesian_calculate_tool(
             else:
                 normalized = dict(item)
 
+            # VALIDATE REQUIRED KEYS
+            required_keys = ['verifiability_score', 'independence_score', 'recency_score']
+            missing_keys = [k for k in required_keys if k not in normalized]
+            if missing_keys:
+                logger.error(
+                    f"Evidence item {idx} missing required keys: {missing_keys}. "
+                    f"Available keys: {list(normalized.keys())}"
+                )
+                # Set defaults for missing scores
+                normalized.setdefault('verifiability_score', 0.5)
+                normalized.setdefault('independence_score', 0.8)
+                normalized.setdefault('recency_score', 0.5)
+
+            # Ensure LLR key exists
             if 'LLR' not in normalized and 'estimated_LLR' in normalized:
                 normalized['LLR'] = normalized['estimated_LLR']
+            elif 'LLR' not in normalized:
+                logger.error(
+                    f"Evidence item {idx} has no LLR or estimated_LLR. Keys: {list(normalized.keys())}"
+                )
+                normalized['LLR'] = 0.0
 
+            # Ensure ID exists (for evidence_summary)
+            if 'id' not in normalized:
+                if 'subclaim_id' in normalized:
+                    normalized['id'] = normalized['subclaim_id']
+                elif 'title' in normalized:
+                    normalized['id'] = normalized['title'][:50]
+                else:
+                    normalized['id'] = f"evidence_{idx}"
+
+            # Sign correction based on support direction
             support = str(normalized.get('support', '')).lower()
             if support in {'pro', 'con', 'neutral'}:
                 try:
@@ -86,6 +120,9 @@ async def bayesian_calculate_tool(
 
             normalized_items.append(normalized)
 
+        if not normalized_items:
+            raise ValueError("No valid evidence items after normalization")
+
         # Perform aggregation
         result = calculator.aggregate_evidence(
             prior_p=prior_p,
@@ -93,15 +130,72 @@ async def bayesian_calculate_tool(
             correlation_clusters=correlation_clusters or []
         )
 
+        # VALIDATE OUTPUT SCHEMA (NEW)
+        required_output_keys = [
+            'p_bayesian', 'log_odds_prior', 'log_odds_posterior', 'evidence_summary'
+        ]
+        missing_output_keys = [k for k in required_output_keys if k not in result]
+        if missing_output_keys:
+            logger.error(
+                f"BayesianCalculator output missing keys: {missing_output_keys}. "
+                f"Returned keys: {list(result.keys())}"
+            )
+            # Add defaults
+            result.setdefault('p_bayesian', prior_p)
+            result.setdefault('log_odds_prior', 0.0)
+            result.setdefault('log_odds_posterior', 0.0)
+            result.setdefault('evidence_summary', [])
+
+        # VALIDATE evidence_summary structure (NEW)
+        if 'evidence_summary' in result:
+            for summary_idx, summary_item in enumerate(result['evidence_summary']):
+                if not isinstance(summary_item, dict):
+                    logger.error(
+                        f"evidence_summary[{summary_idx}] is not a dict: {type(summary_item)}. "
+                        f"This will cause 'list indices must be integers' error!"
+                    )
+                    # Try to convert
+                    if hasattr(summary_item, 'model_dump'):
+                        result['evidence_summary'][summary_idx] = summary_item.model_dump()
+                    elif hasattr(summary_item, 'dict'):
+                        result['evidence_summary'][summary_idx] = summary_item.dict()
+                    else:
+                        # Create minimal dict
+                        result['evidence_summary'][summary_idx] = {
+                            'id': f"evidence_{summary_idx}",
+                            'LLR': 0.0,
+                            'weight': 0.0,
+                            'adjusted_LLR': 0.0
+                        }
+
+                # Validate dict has required keys
+                summary_dict = result['evidence_summary'][summary_idx]
+                required_summary_keys = ['id', 'LLR', 'weight', 'adjusted_LLR']
+                missing_summary_keys = [k for k in required_summary_keys if k not in summary_dict]
+                if missing_summary_keys:
+                    logger.warning(
+                        f"evidence_summary[{summary_idx}] missing keys: {missing_summary_keys}"
+                    )
+                    # Add defaults
+                    summary_dict.setdefault('id', f"evidence_{summary_idx}")
+                    summary_dict.setdefault('LLR', 0.0)
+                    summary_dict.setdefault('weight', 1.0)
+                    summary_dict.setdefault('adjusted_LLR', 0.0)
+
         logger.info(f"✅ Bayesian result: p={result['p_bayesian']:.2%}")
 
         return result
 
     except Exception as e:
-        logger.error(f"❌ Bayesian calculation failed: {e}")
+        logger.error(f"❌ Bayesian calculation failed: {e}", exc_info=True)
+        # Return safe fallback
         return {
             'error': str(e),
-            'p_bayesian': prior_p  # Fall back to prior
+            'p_bayesian': prior_p,
+            'log_odds_prior': 0.0,
+            'log_odds_posterior': 0.0,
+            'evidence_summary': [],
+            'correlation_adjustments': {'method': 'error', 'details': str(e)}
         }
 
 
@@ -228,6 +322,77 @@ async def correlation_detector_tool(
     except Exception as e:
         logger.error(f"❌ Correlation detection failed: {e}")
         return []
+
+
+@tool
+async def store_critique_results_tool(
+    missing_topics: List[str],
+    over_represented_sources: List[str],
+    follow_up_search_seeds: List[str],
+    duplicate_clusters: List[List[str]],
+    correlation_warnings: List[List[str]],
+    analysis_process: str
+) -> Dict[str, Any]:
+    """
+    Store critique analysis results for use by downstream agents.
+
+    This tool MUST be called by the Critic agent after completing analysis.
+    It captures all findings (gaps, duplicates, correlations, recommendations)
+    and makes them available for the Analyst and other agents.
+
+    Args:
+        missing_topics: List of topics/subclaims with insufficient coverage
+        over_represented_sources: List of sources that appear too frequently
+        follow_up_search_seeds: List of recommended search queries to fill gaps
+        duplicate_clusters: List of duplicate evidence clusters
+        correlation_warnings: List of correlated evidence clusters from correlation_detector_tool
+        analysis_process: Brief summary of the critique analysis process
+
+    Returns:
+        Dict confirming results were stored
+
+    Example:
+        >>> result = await store_critique_results_tool(
+        ...     missing_topics=["Subclaim 3 has no evidence"],
+        ...     over_represented_sources=["CNN.com"],
+        ...     follow_up_search_seeds=["query about X", "query about Y"],
+        ...     duplicate_clusters=[["ev1", "ev2"]],
+        ...     correlation_warnings=[["ev3", "ev4"]],
+        ...     analysis_process="Analyzed 15 evidence items, found 2 gaps"
+        ... )
+    """
+    try:
+        logger.info(
+            f"📥 Storing critique results: {len(missing_topics)} gaps, "
+            f"{len(correlation_warnings)} correlations, {len(follow_up_search_seeds)} follow-ups"
+        )
+
+        # Package results for return
+        results = {
+            'missing_topics': missing_topics or [],
+            'over_represented_sources': over_represented_sources or [],
+            'follow_up_search_seeds': follow_up_search_seeds or [],
+            'duplicate_clusters': duplicate_clusters or [],
+            'correlation_warnings': correlation_warnings or [],
+            'analysis_process': analysis_process or 'Critique completed'
+        }
+
+        logger.info(f"✅ Critique results packaged for storage")
+
+        # Return results wrapped in a structure that handle_tool_message can extract
+        return {
+            'status': 'success',
+            'results_stored': results,
+            'message': f"Critique analysis stored: {len(missing_topics)} gaps, {len(correlation_warnings)} correlation warnings"
+        }
+
+    except Exception as e:
+        logger.error(f"❌ Store critique results failed: {e}")
+        return {
+            'status': 'error',
+            'error': str(e),
+            'results_stored': {}
+        }
 
 
 @tool

@@ -267,3 +267,6 @@ Conservative Kelly & sensitivity testing
 Pro Tip
 
 For implementation, start by testing the Planner → Analyst → Reporter chain on a single Polymarket question before adding cross-exchange arbitrage. Once verified, integrate real-time market polling and async task orchestration for production.
+- @arbee/utils/memory.py  @arbee/tools/memory_search.py  ,   ☐ Phase 2B: Add memory query method to autonomous_researcher.py
+  ☐ Phase 2B: Update autonomous_planner.py to use get_base_rates_tool
+  ☐ Test complete system with Diplo market to verify improvements , @arbee/agents/autonomous_base.py  , So I just want to test, like, how do I know that my memory search and my memory, like, how this memory, how is this memory working, where is it being stored, and are you sure that we have nothing art-coded? And second, can we keep up with the bullet points, with the action items set up, and ensure that, again, by default our base agent should take consideration, like, to query the memory and have some sort of conscious of what he's doing and have some sort of smart intelligence on it, yeah, and ensure to do it.

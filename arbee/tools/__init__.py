@@ -18,12 +18,8 @@ from arbee.tools.bayesian import (
     bayesian_calculate_tool,
     sensitivity_analysis_tool,
     correlation_detector_tool,
+    store_critique_results_tool,
     validate_llr_calibration_tool
-)
-from arbee.tools.validation import (
-    validate_prior_tool,
-    check_llr_calibration_tool,
-    validate_search_results_tool
 )
 
 __all__ = [
@@ -31,7 +27,6 @@ __all__ = [
     'get_research_tools',
     'get_analysis_tools',
     'get_memory_tools',
-    'get_validation_tools',
     # Individual tools
     'web_search_tool',
     'multi_query_search_tool',
@@ -44,10 +39,8 @@ __all__ = [
     'bayesian_calculate_tool',
     'sensitivity_analysis_tool',
     'correlation_detector_tool',
+    'store_critique_results_tool',
     'validate_llr_calibration_tool',
-    'validate_prior_tool',
-    'check_llr_calibration_tool',
-    'validate_search_results_tool',
 ]
 
 
@@ -58,7 +51,6 @@ def get_research_tools() -> List[BaseTool]:
         multi_query_search_tool,
         extract_evidence_tool,
         verify_source_tool,
-        validate_search_results_tool,
     ]
 
 
@@ -68,6 +60,7 @@ def get_analysis_tools() -> List[BaseTool]:
         bayesian_calculate_tool,
         sensitivity_analysis_tool,
         correlation_detector_tool,
+        store_critique_results_tool,
         validate_llr_calibration_tool,
     ]
 
@@ -82,19 +75,10 @@ def get_memory_tools() -> List[BaseTool]:
     ]
 
 
-def get_validation_tools() -> List[BaseTool]:
-    """Get all validation tools"""
-    return [
-        validate_prior_tool,
-        check_llr_calibration_tool,
-    ]
-
-
 def get_all_tools() -> List[BaseTool]:
     """Get all available tools"""
     return (
         get_research_tools() +
         get_analysis_tools() +
-        get_memory_tools() +
-        get_validation_tools()
+        get_memory_tools()
     )

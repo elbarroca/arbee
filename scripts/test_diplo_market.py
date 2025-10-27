@@ -96,7 +96,23 @@ async def main():
 
         # Display key results
         print(f"\n📊 KEY RESULTS:")
-        print(f"   Bayesian Probability (p_bayesian): {result.get('p_bayesian', 0):.2%}")
+
+        # Get analyst output for confidence intervals
+        analyst_output = result.get('analyst_output')
+        if analyst_output:
+            p_bayesian = analyst_output.p_bayesian
+            p_low = getattr(analyst_output, 'p_bayesian_low', None)
+            p_high = getattr(analyst_output, 'p_bayesian_high', None)
+            conf_level = getattr(analyst_output, 'confidence_level', 0.80)
+
+            print(f"   Bayesian Probability: {p_bayesian:.2%}")
+            if p_low is not None and p_high is not None:
+                print(f"   Confidence Interval ({conf_level:.0%}): [{p_low:.2%} - {p_high:.2%}]")
+                range_width = p_high - p_low
+                print(f"   Uncertainty Range: ±{range_width/2:.1%}")
+        else:
+            print(f"   Bayesian Probability (p_bayesian): {result.get('p_bayesian', 0):.2%}")
+
         print(f"   Execution Time: {execution_time:.1f}s")
 
         # Display workflow outputs (autonomous agents)
@@ -148,7 +164,13 @@ async def main():
             print(f"\n🧮 AUTONOMOUS ANALYST:")
             print(f"   Prior p0: {analyst.p0:.2%}")
             print(f"   Posterior p_bayesian: {analyst.p_bayesian:.2%}")
-            print(f"   Change: {(analyst.p_bayesian - analyst.p0):+.2%}")
+
+            # Show confidence interval if available
+            if hasattr(analyst, 'p_bayesian_low') and hasattr(analyst, 'p_bayesian_high'):
+                print(f"   Confidence Interval ({analyst.confidence_level:.0%}): "
+                      f"[{analyst.p_bayesian_low:.2%} - {analyst.p_bayesian_high:.2%}]")
+
+            print(f"   Change from prior: {(analyst.p_bayesian - analyst.p0):+.2%}")
             print(f"   Evidence items analyzed: {len(analyst.evidence_summary)}")
             print(f"   Calculation steps: {len(analyst.calculation_steps)}")
             print(f"   Sensitivity scenarios: {len(analyst.sensitivity_analysis)}")
