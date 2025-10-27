@@ -22,7 +22,8 @@ langchain-anthropic==0.2.4    # Anthropic Claude integration
 langchain-openai==0.2.5       # OpenAI integration (optional backup)
 langgraph==0.2.45             # Graph-based agent workflow orchestration
 langchain-valyu>=0.1.0        # Valyu deep research integration for comprehensive web search
-
+langgraph-checkpoint-postgres # Postgres checkpoint storage for langgraph
+nest_asyncio==1.6.0          # Asyncio support for nest_asyncio
 # -----------------------------------------------------------------------------
 # Async & HTTP Client Libraries
 # -----------------------------------------------------------------------------
@@ -34,8 +35,6 @@ requests==2.32.5              # Synchronous HTTP fallback
 # Prediction Market APIs
 # -----------------------------------------------------------------------------
 py-clob-client==0.28.0      # Polymarket CLOB API official client
-web3==7.4.0                   # Ethereum interaction (for Polymarket wallet)
-eth-account==0.13.4           # Ethereum account management
 
 # -----------------------------------------------------------------------------
 # Cryptography (for Kalshi RSA signatures)
