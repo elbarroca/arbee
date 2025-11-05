@@ -17,7 +17,7 @@ from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
-from config import settings as app_settings
+from config.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -219,7 +219,7 @@ async def verify_source_tool(url: str, source_name: Optional[str] = None) -> Dic
 @lru_cache(maxsize=4)
 def _get_cached_llm(model: str, temperature: float) -> ChatOpenAI:
     """Create or retrieve a cached ChatOpenAI instance."""
-    return ChatOpenAI(model=model, temperature=temperature, openai_api_key=app_settings.OPENAI_API_KEY)
+    return ChatOpenAI(model=model, temperature=temperature, openai_api_key=settings.OPENAI_API_KEY)
 
 
 def _prepare_llm_prompt(
@@ -309,12 +309,12 @@ async def analyze_evidence_with_llm(
     Analyze evidence content with an LLM to determine support and LLR.
     Falls back to a heuristic when the LLM is unavailable.
     """
-    if not app_settings.OPENAI_API_KEY:
+    if not settings.OPENAI_API_KEY:
         return _heuristic_evidence_analysis(content=content, subclaim=subclaim, source_type=source_type, verifiability=verifiability)
 
-    model_name = getattr(app_settings, "EVIDENCE_LLM_MODEL", DEFAULT_EVIDENCE_MODEL) or DEFAULT_EVIDENCE_MODEL
+    model_name = getattr(settings, "EVIDENCE_LLM_MODEL", DEFAULT_EVIDENCE_MODEL) or DEFAULT_EVIDENCE_MODEL
     if temperature is None:
-        tv = getattr(app_settings, "EVIDENCE_LLM_TEMPERATURE", DEFAULT_EVIDENCE_TEMPERATURE)
+        tv = getattr(settings, "EVIDENCE_LLM_TEMPERATURE", DEFAULT_EVIDENCE_TEMPERATURE)
         try:
             temperature = float(tv)
         except (TypeError, ValueError):

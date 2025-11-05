@@ -20,7 +20,7 @@ import httpx  # type: ignore
 logger = logging.getLogger(__name__)
 
 try:
-    from config import settings  # type: ignore
+    from config.settings import settings  # type: ignore
 except Exception:  # pragma: no cover
     settings = None
 

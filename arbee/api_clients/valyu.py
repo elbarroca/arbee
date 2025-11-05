@@ -5,11 +5,20 @@ Strict validation, deep search, no fallbacks.
 import os
 from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta
-from config import settings
+from config.settings import settings
 import logging
-from langchain_valyu import ValyuSearchTool, ValyuContentsTool
 
 logger = logging.getLogger(__name__)
+
+# Optional import - langchain_valyu might not be installed
+try:
+    from langchain_valyu import ValyuSearchTool, ValyuContentsTool
+    VALYU_AVAILABLE = True
+except ImportError:
+    logger.warning("langchain_valyu not installed. Valyu research features will be unavailable.")
+    VALYU_AVAILABLE = False
+    ValyuSearchTool = None
+    ValyuContentsTool = None
 
 
 class ValyuResearchClient:
@@ -17,6 +26,11 @@ class ValyuResearchClient:
 
     def __init__(self):
         """Initialize with strict validation."""
+        if not VALYU_AVAILABLE:
+            raise RuntimeError(
+                "langchain_valyu is not installed. "
+                "Install it with: pip install langchain-valyu"
+            )
         self._validate_config()
         os.environ['VALYU_API_KEY'] = settings.VALYU_API_KEY
         self.search_tool = ValyuSearchTool()

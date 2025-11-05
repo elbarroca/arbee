@@ -8,7 +8,7 @@ import httpx
 from typing import Dict, List, Optional
 from datetime import datetime, timedelta
 from py_clob_client.client import ClobClient
-from config import settings
+from config.settings import settings
 
 # Exceptions
 class PolymarketError(Exception):

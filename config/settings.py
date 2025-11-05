@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     KALSHI_API_KEY: str = ""     # Bearer token
     KALSHI_PRIVATE_KEY_PATH: str = "./keys/kalshi_private_key.pem"
 
+    POLYMARKET_PRIVATE_KEY: str = ""  # For trading on Polymarket
+
     # --- API URLs ---
     POLYMARKET_GAMMA_URL: str = "https://gamma-api.polymarket.com"
     POLYMARKET_CLOB_URL: str = "https://clob.polymarket.com"

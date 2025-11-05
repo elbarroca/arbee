@@ -5,7 +5,7 @@ Handles all database operations with proper error handling and type safety
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 from uuid import UUID
-from config import settings
+from config.settings import settings
 from supabase import create_client, Client
 import os
 
@@ -16,10 +16,10 @@ class SupabaseClient:
     def __init__(self):
         """Initialize Supabase client"""
         try:
-
+            # Use uppercase attribute names to match Settings class
             self.client: Client = create_client(
-                settings.supabase_url,
-                settings.supabase_key
+                settings.SUPABASE_URL,
+                settings.SUPABASE_KEY
             )
         except ImportError:
             print("Warning: Supabase library not installed. Install with: pip install supabase")
