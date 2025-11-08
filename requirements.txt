@@ -35,6 +35,7 @@ requests==2.32.5              # Synchronous HTTP fallback
 # Prediction Market APIs
 # -----------------------------------------------------------------------------
 py-clob-client==0.28.0      # Polymarket CLOB API official client
+web3>=7.0.0,<8.0.0          # Ethereum/Polygon blockchain interaction (7.x supports eth-account>=0.13)
 
 # -----------------------------------------------------------------------------
 # Cryptography (for Kalshi RSA signatures)
@@ -55,6 +56,8 @@ sqlalchemy==2.0.35            # SQL toolkit (optional for ORM)
 numpy==1.26.4                 # Numerical computing library
 scipy==1.14.1                 # Scientific computing (for statistical functions)
 pandas==2.2.3                 # Data manipulation (optional for analysis)
+quantstats==0.0.62            # Trading performance metrics and analytics
+empyrical==0.5.5              # Risk metrics (Sharpe, Sortino, etc.)
 
 # -----------------------------------------------------------------------------
 # Utilities
@@ -63,6 +66,7 @@ python-dotenv==1.0.1          # .env file support
 python-dateutil==2.9.0.post0  # Date parsing and manipulation
 pytz==2024.2                  # Timezone support
 typing-extensions==4.12.2     # Backport of typing features
+APScheduler==3.10.4           # Async cron jobs and task scheduling
 
 # -----------------------------------------------------------------------------
 # Web Scraping (Optional - for Valyu fallback)
@@ -72,10 +76,18 @@ beautifulsoup4==4.12.3        # HTML parsing
 lxml==5.3.0                   # Fast XML/HTML parser
 
 # -----------------------------------------------------------------------------
+# Dashboard & Visualization
+# -----------------------------------------------------------------------------
+streamlit==1.28.2             # Interactive dashboard framework
+plotly==5.18.0                # Interactive charts and visualizations
+
+# -----------------------------------------------------------------------------
 # Development Dependencies
 # -----------------------------------------------------------------------------
 # Testing
-pytest==8.3.3            
+pytest==8.3.3
+pytest-asyncio==0.24.0
+pytest-cov==6.0.0            
 
 # Code Quality
 black==24.10.0                # Code formatter

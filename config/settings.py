@@ -7,8 +7,8 @@ POLYSEER configuration & tunables (merged)
 
 from __future__ import annotations
 from pydantic_settings import BaseSettings
-from pydantic import Field
-from typing import List
+from pydantic import Field, model_validator
+from typing import List, Optional, Dict, Any
 
 
 # =========================
@@ -68,12 +68,109 @@ class Settings(BaseSettings):
     INSIDER_WALLET_ADDRESSES: List[str] = Field(default_factory=list)
     POLYSIGHTS_API_KEY: str = ""
     STAND_TRADE_API_KEY: str = ""
+    
+    # --- COPY TRADING ---
+    ENABLE_COPY_TRADING: bool = False
+    COPY_TRADING_MAX_SLIPPAGE_BPS: int = 50
+    COPY_TRADING_MAX_SIZE_PER_WALLET: float = 1000.0
+    COPY_TRADING_COOLDOWN_SECONDS: int = 60
+    COPY_TRADING_MIN_EV_THRESHOLD: float = 0.02
+    COPY_TRADING_ADVERSE_FILL_LIMIT: int = 3
+    COPY_TRADING_ADVERSE_FILL_WINDOW_MINUTES: int = 10
+    COPY_TRADING_MIN_TRADE_SIZE_USD: float = 10.0
+    COPY_TRADING_MIN_LIQUIDITY_USD: float = 1000.0
+    
+    # --- WEBHOOK PROVIDERS ---
+    ALCHEMY_API_KEY: str = ""
+    ALCHEMY_WEBHOOK_URL: str = ""
+    QUICKNODE_API_KEY: str = ""
+    QUICKNODE_WEBHOOK_URL: str = ""
+    MORALIS_API_KEY: str = ""
+    MORALIS_WEBHOOK_URL: str = ""
+    WEBHOOK_URL: str = ""  # Default webhook URL if provider-specific not set
+
+    # --- ON-CHAIN ANALYTICS ---
+    BITQUERY_API_KEY: str = ""
+    BITQUERY_API_URL: str = "https://graphql.bitquery.io"
+    DUNE_API_KEY: str = ""
+
+    # --- TRADING WALLET ---
+    TRADING_WALLET_PRIVATE_KEY: str = ""  # Store securely, never commit
+    TRADING_WALLET_ADDRESS: str = ""
+    POLYMARKET_CLOB_API_KEY: str = ""
+    POLYMARKET_CLOB_SECRET: str = ""
+    DRY_RUN_MODE: bool = True  # Paper trading by default
+    
+    # --- COPY TRADER CRITERIA ---
+    COPY_TRADER_MIN_PNL_30D: float = 0.0
+    COPY_TRADER_MIN_SHARPE: float = 0.7
+    COPY_TRADER_MIN_TRADES: int = 200
+    COPY_TRADER_MAX_WALLET_AGE_DAYS: Optional[int] = None
+    COPY_TRADER_MIN_WIN_RATE: float = 0.5
+    COPY_TRADING_MAX_TRADERS_TO_CHECK: int = 5  # Max traders to check per market
+    ARBITRAGE_MAX_OPPORTUNITIES_TO_LOG: int = 5  # Max arbitrage opportunities to log
 
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
         case_sensitive = False
         extra = "allow"  # allow unknown keys in .env for forward compatibility
+
+    def validate_memory_config(self) -> Dict[str, Any]:
+        """
+        Validate memory configuration and return validation results.
+        
+        Returns:
+            Dictionary with validation results including:
+            - valid: Whether configuration is valid
+            - errors: List of error messages
+            - warnings: List of warning messages
+            - recommendations: List of recommendations
+        """
+        errors = []
+        warnings = []
+        recommendations = []
+        
+        # Check memory persistence setting
+        if not self.ENABLE_MEMORY_PERSISTENCE:
+            warnings.append("Memory persistence is disabled - agents will not use memory")
+            recommendations.append("Set ENABLE_MEMORY_PERSISTENCE=true to enable memory features")
+            return {
+                "valid": True,  # Still valid, just disabled
+                "errors": errors,
+                "warnings": warnings,
+                "recommendations": recommendations,
+            }
+        
+        # Check backend configuration
+        if self.MEMORY_BACKEND not in ["postgresql", "redis", "memory"]:
+            errors.append(f"Invalid MEMORY_BACKEND: {self.MEMORY_BACKEND}. Must be 'postgresql', 'redis', or 'memory'")
+        
+        # Check PostgreSQL/Supabase credentials if using PostgreSQL backend
+        if self.MEMORY_BACKEND == "postgresql":
+            if not self.SUPABASE_URL and not getattr(self, "POSTGRES_URL", ""):
+                errors.append("PostgreSQL backend requires SUPABASE_URL or POSTGRES_URL")
+            
+            if not self.SUPABASE_KEY and not self.SUPABASE_SERVICE_KEY and not getattr(self, "POSTGRES_URL", ""):
+                errors.append("PostgreSQL backend requires SUPABASE_KEY or SUPABASE_SERVICE_KEY or POSTGRES_URL")
+            
+            # Check URL format if Supabase URL provided
+            if self.SUPABASE_URL:
+                import re
+                if not re.match(r"https://[a-zA-Z0-9-]+\.supabase\.co", self.SUPABASE_URL):
+                    warnings.append(f"SUPABASE_URL format may be invalid: {self.SUPABASE_URL}")
+        
+        # Check Redis configuration if using Redis backend
+        if self.MEMORY_BACKEND == "redis":
+            if not getattr(self, "REDIS_URL", ""):
+                warnings.append("Redis backend requires REDIS_URL environment variable")
+        
+        return {
+            "valid": len(errors) == 0,
+            "errors": errors,
+            "warnings": warnings,
+            "recommendations": recommendations,
+        }
 
 
 # Global settings instance
@@ -222,6 +319,33 @@ ENABLE_QUERY_DEDUPLICATION_DEFAULT = True
 ENABLE_URL_BLOCKING_DEFAULT = True
 ENABLE_CIRCUIT_BREAKERS_DEFAULT = True
 ENABLE_AUTO_MEMORY_QUERY_DEFAULT = True
+
+# --- TOKEN MAPPING CACHE ---
+TOKEN_MAPPING_CACHE_TTL_SECONDS = 300  # 5 minutes
+MARKET_VALIDATION_CACHE_TTL_SECONDS = 300  # 5 minutes
+ORDERBOOK_SNAPSHOT_CACHE_TTL_SECONDS = 60  # 1 minute
+
+# --- TRADER DISCOVERY SCORING ---
+TRADER_SCORE_EARLY_BETTING_WEIGHT = 0.30  # Trades within 24h of market creation
+TRADER_SCORE_VOLUME_CONSISTENCY_WEIGHT = 0.20  # Low coefficient of variation
+TRADER_SCORE_WIN_RATE_WEIGHT = 0.20  # Resolved market success rate
+TRADER_SCORE_EDGE_DETECTION_WEIGHT = 0.20  # Price movement after bet
+TRADER_SCORE_ACTIVITY_LEVEL_WEIGHT = 0.10  # Trade frequency
+
+TRADER_MIN_TRADES_30D = 50  # Minimum trades to be considered
+TRADER_MIN_RESOLVED_MARKETS = 10  # For win rate calculation
+TRADER_WIN_RATE_THRESHOLD = 0.55  # 55% win rate for full points
+TRADER_IDEAL_WEEKLY_TRADES_MIN = 5
+TRADER_IDEAL_WEEKLY_TRADES_MAX = 20
+TRADER_EARLY_BET_WINDOW_HOURS = 24  # Bet within X hours of market creation
+TRADER_AUTO_ADD_SCORE_THRESHOLD = 70  # Auto-add if score > 70
+TRADER_AUTO_PAUSE_SHARPE_THRESHOLD = 0.3  # Pause if 7-day Sharpe < 0.3
+TRADER_SCORE_REFRESH_INTERVAL_HOURS = 24  # Daily refresh
+
+# --- PAPER TRADING ---
+PAPER_TRADING_LOG_TABLE = "paper_trading_logs"
+PAPER_TRADING_MIN_DAYS = 7  # Minimum days of paper trading before live
+PAPER_TRADING_MIN_POSITIVE_ROI = 0.02  # 2% ROI required to go live
 
 # --- ENV VAR KEYS (reference) ---
 ENV_SUPABASE_URL = "SUPABASE_URL"

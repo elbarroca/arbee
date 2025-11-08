@@ -1,0 +1,1493 @@
+{
+  "market_question": "Google Gemini 3 score on Humanity's Last Exam by January 31?",
+  "market_url": "https://polymarket.com/event/google-gemini-3-humanity-last-exam-jan-31",
+  "market_slug": "google-gemini-3-humanity-last-exam-jan-31",
+  "providers": [
+    "polymarket"
+  ],
+  "bankroll": 10000.0,
+  "max_kelly": 0.05,
+  "min_edge_threshold": 0.02,
+  "workflow_id": "211de58c-c2ed-40de-84e2-0deecc5a0590",
+  "timestamp": "2025-11-08T15:54:46.240132",
+  "context": {},
+  "messages": [
+    {
+      "content": "Autonomous Planner: 6 subclaims, 1.0 iterations",
+      "additional_kwargs": {},
+      "response_metadata": {},
+      "type": "ai",
+      "name": null,
+      "id": "316e0d3f-a576-4238-b099-f4cc7eea15c0",
+      "tool_calls": [],
+      "invalid_tool_calls": [],
+      "usage_metadata": null
+    },
+    {
+      "content": "Autonomous Researchers: 18 evidence items (6P, 6C, 6G)",
+      "additional_kwargs": {},
+      "response_metadata": {},
+      "type": "ai",
+      "name": null,
+      "id": "57b11d7f-7925-421e-a6d4-7acc0a13b767",
+      "tool_calls": [],
+      "invalid_tool_calls": [],
+      "usage_metadata": null
+    },
+    {
+      "content": "Autonomous Critic: 1 correlations, 0 gaps",
+      "additional_kwargs": {},
+      "response_metadata": {},
+      "type": "ai",
+      "name": null,
+      "id": "e817d66a-7124-4123-917e-e58c4674cd6e",
+      "tool_calls": [],
+      "invalid_tool_calls": [],
+      "usage_metadata": null
+    },
+    {
+      "content": "Autonomous Analyst: p=55.02% (from 50.00%)",
+      "additional_kwargs": {},
+      "response_metadata": {},
+      "type": "ai",
+      "name": null,
+      "id": "547286b7-c41c-4499-af92-98eab5a28a5b",
+      "tool_calls": [],
+      "invalid_tool_calls": [],
+      "usage_metadata": null
+    },
+    {
+      "content": "Autonomous Arbitrage: 0 opportunities across 1 markets",
+      "additional_kwargs": {},
+      "response_metadata": {},
+      "type": "ai",
+      "name": null,
+      "id": "ed662eb2-7013-4961-81db-8675900766ea",
+      "tool_calls": [],
+      "invalid_tool_calls": [],
+      "usage_metadata": null
+    },
+    {
+      "content": "Autonomous Reporter: Final report complete",
+      "additional_kwargs": {},
+      "response_metadata": {},
+      "type": "ai",
+      "name": null,
+      "id": "3bd7f6aa-cfd9-494f-9fad-24bd30277120",
+      "tool_calls": [],
+      "invalid_tool_calls": [],
+      "usage_metadata": null
+    }
+  ],
+  "agent_traces": [
+    {
+      "agent_name": "AutonomousPlannerAgent",
+      "timestamp": "2025-11-08T15:54:54.485393",
+      "action": "autonomous_planning_completed",
+      "details": {
+        "subclaim_count": 6,
+        "search_seed_counts": {
+          "pro": 3,
+          "con": 3,
+          "general": 3
+        },
+        "prior": 0.5,
+        "iterations": 1.0,
+        "tool_calls": 0
+      }
+    },
+    {
+      "agent_name": "AutonomousResearcherAgents",
+      "timestamp": "2025-11-08T15:56:50.288715",
+      "action": "autonomous_research_completed",
+      "details": {
+        "total_items": 18,
+        "direction_counts": {
+          "pro": 6,
+          "con": 6,
+          "general": 6
+        }
+      }
+    },
+    {
+      "agent_name": "AutonomousCriticAgent",
+      "timestamp": "2025-11-08T15:57:51.033551",
+      "action": "autonomous_critique_completed",
+      "details": {
+        "duplicate_clusters": 1,
+        "missing_topics": 0,
+        "over_represented_sources": 1,
+        "iterations": 3.0
+      }
+    },
+    {
+      "agent_name": "AutonomousAnalystAgent",
+      "timestamp": "2025-11-08T15:58:52.035610",
+      "action": "autonomous_analysis_completed",
+      "details": {
+        "p_bayesian": 0.5502299921699274,
+        "evidence_items": 13,
+        "sensitivity_scenarios": 4,
+        "iterations": 2.0,
+        "threshold_markets": 0
+      }
+    },
+    {
+      "agent_name": "AutonomousArbitrageAgent",
+      "timestamp": "2025-11-08T16:00:34.618490",
+      "action": "autonomous_arbitrage_completed",
+      "details": {
+        "opportunity_count": 0,
+        "markets_analyzed": 1,
+        "threshold_markets": 0,
+        "providers_checked": [
+          "polymarket"
+        ],
+        "edge_detection_enabled": true,
+        "p_bayesian_used": 0.5502299921699274,
+        "market_price_used": 0.5
+      }
+    },
+    {
+      "agent_name": "AutonomousReporterAgent",
+      "timestamp": "2025-11-08T16:00:44.257816",
+      "action": "autonomous_report_completed",
+      "details": {
+        "summary_length": 426
+      }
+    }
+  ],
+  "p0_prior": 0.5,
+  "search_seeds": {
+    "pro": [
+      "2025 Google Gemini 3 performance",
+      "latest AI training advancements 2025",
+      "2025 AI benchmarks"
+    ],
+    "con": [
+      "2025 AI limitations",
+      "current challenges in AI understanding 2025",
+      "2025 skepticism about AI performance"
+    ],
+    "general": [
+      "2025 AI trends",
+      "recent developments in AI technology 2025",
+      "2025 context for AI assessments"
+    ]
+  },
+  "subclaims": [
+    {
+      "id": "sc_1",
+      "text": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+      "direction": "pro"
+    },
+    {
+      "id": "sc_2",
+      "text": "Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+      "direction": "con"
+    },
+    {
+      "id": "sc_3",
+      "text": "Recent benchmarks indicate that AI models are improving rapidly, suggesting a favorable outcome for Gemini 3.",
+      "direction": "pro"
+    },
+    {
+      "id": "sc_4",
+      "text": "The complexity of the exam may expose weaknesses in Gemini 3's reasoning capabilities, leading to a lower score.",
+      "direction": "con"
+    },
+    {
+      "id": "sc_5",
+      "text": "Public and expert sentiment is increasingly optimistic about AI performance, which may positively influence Gemini 3's score.",
+      "direction": "pro"
+    },
+    {
+      "id": "sc_6",
+      "text": "Skepticism remains regarding AI's ability to fully grasp nuanced human concepts, potentially affecting Gemini 3's performance.",
+      "direction": "con"
+    }
+  ],
+  "all_evidence": [
+    {
+      "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+      "title": "Gemini 3.0\u2019s Code Generation Leap: What\u2019s Real & Next (2025 Update)",
+      "url": "https://skywork.ai/blog/gemini-3-code-generation-2025/?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "weak",
+      "claim_summary": "There is growing interest in Gemini 3.0, with indications of improved coding and planning capabilities. However, Google has not yet released official benchmarks or confirmed a public launch for Gemini 3.0, leaving its performance on the Humanity's Last Exam uncertain.",
+      "support": "neutral",
+      "verifiability_score": 0.5,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": 0.0,
+      "extraction_notes": "LLM-analyzed from weak source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+      "title": "Google\u2019s Gemini 3.0: Here Is All We Know and What to Expect | Fello AI",
+      "url": "https://felloai.com/2025/06/googles-gemini-3-0-here-is-all-we-know-and-what-to-expect/?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "secondary",
+      "claim_summary": "Google's Gemini series has rapidly evolved, with each version enhancing its capabilities, particularly in handling multimodal inputs. The advancements in AI training techniques suggest that Gemini 3.0 could achieve a high score on Humanity's Last Exam. The ambitious nature of the project positions it as a strong competitor to existing models.",
+      "support": "pro",
+      "verifiability_score": 0.6,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": 0.5,
+      "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+      "title": "Google Gemini 3.0: Release Date, Features & What's New [Updated Nov 2025]",
+      "url": "https://xole.ai/technology/gemini-3?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "weak",
+      "claim_summary": "Google Gemini 3.0 is expected to have enhanced multimodal capabilities and superior coding abilities, which may contribute to achieving a high score on Humanity's Last Exam. The CEO confirmed its release in 2025, indicating ongoing advancements in AI training techniques. Additionally, the stealth testing of models shows promising results in code generation.",
+      "support": "pro",
+      "verifiability_score": 0.5,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": 0.15,
+      "extraction_notes": "LLM-analyzed from weak source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+      "title": "What's next for AI in 2025 | MIT Technology Review",
+      "url": "https://www.technologyreview.com/2025/01/08/1109188/whats-next-for-ai-in-2025/?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "secondary",
+      "claim_summary": "The article discusses trends and predictions in AI but does not provide specific evidence regarding Google Gemini 3's performance on Humanity's Last Exam. It highlights the rapid advancements in AI training techniques without directly linking them to Gemini 3's potential score.",
+      "support": "neutral",
+      "verifiability_score": 0.6,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": 0.0,
+      "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+      "title": "How AI Is Shaping the Future of Corporate Training in 2025",
+      "url": "https://trainingindustry.com/articles/artificial-intelligence/how-ai-is-shaping-the-future-of-corporate-training-in-2025/?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "secondary",
+      "claim_summary": "Advancements in AI are transforming learning and development, making corporate training more adaptable and personalized. This evolution is crucial for equipping the workforce with necessary skills, suggesting that AI improvements could positively impact performance in assessments like Humanity's Last Exam.",
+      "support": "pro",
+      "verifiability_score": 0.6,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": 0.5,
+      "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+      "title": "2025 AI Cyber Benchmark | Wavestone",
+      "url": "https://www.wavestone.com/en/insight/2025-ai-cyber-benchmark/?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "secondary",
+      "claim_summary": "The excerpt discusses the accelerated adoption of AI by large organizations and the development of promising use cases. However, it does not provide specific evidence regarding Google Gemini 3's performance on Humanity's Last Exam or advancements in AI training techniques. The focus is on general trends in AI adoption and security risks.",
+      "support": "neutral",
+      "verifiability_score": 0.6,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": 0.0,
+      "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+      "title": "Gemini 3 Limitations 5 Key Challenges 2025 - skywork ai",
+      "url": "https://skywork.ai/blog/llm/gemini-3-limitations-5-key-challenges-2025/?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "weak",
+      "claim_summary": "The excerpt emphasizes the importance of understanding the limitations of tools like Gemini 3, suggesting that ignoring these limits can lead to significant challenges. It implies that without recognizing these constraints, users may encounter difficulties in achieving successful outcomes. This supports the notion that Gemini 3 may struggle with tasks requiring deep human context.",
+      "support": "pro",
+      "verifiability_score": 0.5,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": 0.15,
+      "extraction_notes": "LLM-analyzed from weak source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+      "title": "20 Pros & Cons of Gemini AI by Google [2025] - DigitalDefynd",
+      "url": "https://digitaldefynd.com/IQ/pros-cons-of-gemini-ai-by-google/?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "secondary",
+      "claim_summary": "The article highlights that Google Gemini 3 has achieved high pass rates on challenging tasks, indicating strong reasoning capabilities. However, it also suggests that there are inherent trade-offs and limitations in AI's understanding of human context. This implies potential struggles in scoring well on subjective assessments like Humanity's Last Exam.",
+      "support": "con",
+      "verifiability_score": 0.7,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": -0.4,
+      "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+      "title": "Gemini 3.0 and the Future of AI: 2025 Status & Readiness Guide",
+      "url": "https://skywork.ai/blog/gemini-3-0-future-ai-2025/?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "weak",
+      "claim_summary": "As of mid-October 2025, Google has not announced a Gemini 3.0 model, indicating potential limitations in its development. The lack of an official release suggests challenges in achieving a high score on Humanity's Last Exam. This uncertainty reflects inherent limitations in AI's understanding of human context.",
+      "support": "con",
+      "verifiability_score": 0.5,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": -0.15,
+      "extraction_notes": "LLM-analyzed from weak source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+      "title": "AI trends 2025: Adoption barriers and updated predictions",
+      "url": "https://www.deloitte.com/us/en/services/consulting/blogs/ai-adoption-challenges-ai-trends.html?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "secondary",
+      "claim_summary": "The article discusses the barriers to adopting advanced AI technologies and the complexities involved in their implementation. However, it does not provide specific evidence regarding Google Gemini 3's capabilities or limitations in understanding human context. Therefore, it remains ambiguous whether Gemini 3 will struggle on Humanity's Last Exam.",
+      "support": "neutral",
+      "verifiability_score": 0.6,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": 0.0,
+      "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+      "title": "AI Challenges Explained: Key Issues and Solutions for 2025",
+      "url": "https://www.upgrad.com/blog/top-challenges-in-artificial-intelligence/?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "secondary",
+      "claim_summary": "The article discusses various challenges faced by AI, including technical limitations that hinder its understanding of human context. These inherent limitations suggest that Google Gemini 3 may struggle to perform well on Humanity's Last Exam. The mention of ethical dilemmas and trust issues further indicates potential obstacles for AI in comprehending complex human scenarios.",
+      "support": "pro",
+      "verifiability_score": 0.65,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": 0.5,
+      "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+      "title": "Key findings from Stanford\u2019s 2025 AI Index Report | IBM",
+      "url": "https://www.ibm.com/think/news/stanford-hai-2025-ai-index-report?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "secondary",
+      "claim_summary": "The excerpt discusses the Stanford AI Index Report's findings on AI's role in society but does not provide specific evidence regarding Google Gemini 3's limitations in understanding human context or its potential performance on Humanity's Last Exam.",
+      "support": "neutral",
+      "verifiability_score": 0.65,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": 0.0,
+      "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+      "title": "Future of AI: 7 Key AI Trends For 2025 & 2026",
+      "url": "https://explodingtopics.com/blog/future-of-ai?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "secondary",
+      "claim_summary": "The article discusses the rapid evolution of AI and its potential economic impact, but does not provide specific evidence regarding Google Gemini 3's performance on Humanity's Last Exam or advancements in AI training techniques.",
+      "support": "neutral",
+      "verifiability_score": 0.6,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": 0.0,
+      "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+      "title": "What's next for AI in 2025 | MIT Technology Review",
+      "url": "https://www.technologyreview.com/2025/01/08/1109188/whats-next-for-ai-in-2025/?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "secondary",
+      "claim_summary": "The article discusses trends and predictions in AI but does not provide specific evidence regarding Google Gemini 3's performance or advancements in training techniques. It emphasizes the unpredictability of the AI industry, suggesting that outcomes are uncertain.",
+      "support": "neutral",
+      "verifiability_score": 0.6,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": 0.0,
+      "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+      "title": "Google Cloud predicts AI trends for businesses in 2025",
+      "url": "https://blog.google/products/google-cloud/ai-trends-business-2025/?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "weak",
+      "claim_summary": "The article discusses the anticipated impact of AI on businesses in 2025, highlighting advancements like multimodal AI and enhanced enterprise search. However, it does not provide specific evidence regarding Google Gemini 3's performance on Humanity's Last Exam or its training techniques. The claims are general and do not directly support the subclaim.",
+      "support": "neutral",
+      "verifiability_score": 0.5,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": 0.0,
+      "extraction_notes": "LLM-analyzed from weak source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+      "title": "6 AI trends you\u2019ll see more of in 2025",
+      "url": "https://news.microsoft.com/source/features/ai/6-ai-trends-youll-see-more-of-in-2025/?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "high_quality_secondary",
+      "claim_summary": "The article suggests that advancements in AI, including improved memory and reasoning capabilities, will enhance AI's effectiveness. This indicates a positive outlook for AI systems like Google Gemini 3 in achieving high scores on assessments such as Humanity's Last Exam. The evolution of AI into a more integral part of life further supports the potential for high performance.",
+      "support": "pro",
+      "verifiability_score": 0.8,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": 0.8,
+      "extraction_notes": "LLM-analyzed from high_quality_secondary source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+      "title": "Artificial Intelligence News -- ScienceDaily",
+      "url": "https://www.sciencedaily.com/news/computers_math/artificial_intelligence/?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "secondary",
+      "claim_summary": "The article discusses advancements in AI technology, such as a breakthrough optical processor that enhances data processing speeds. However, it does not specifically mention Google Gemini 3 or its performance on Humanity's Last Exam. Therefore, the evidence does not clearly support or oppose the subclaim.",
+      "support": "neutral",
+      "verifiability_score": 0.65,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": 0.0,
+      "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+    },
+    {
+      "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+      "title": "2025 AI Safety Index - Future of Life Institute",
+      "url": "https://futureoflife.org/ai-safety-index-summer-2025/?utm_source=valyu.ai&utm_medium=referral",
+      "published_date": "2025-11-08",
+      "source_type": "secondary",
+      "claim_summary": "The AI Safety Index rates Google DeepMind with a low score of C-1.76, indicating challenges in safety and security domains. This suggests that advancements in AI training techniques may not be sufficient for achieving a high score on Humanity's Last Exam. Overall, the ratings reflect unfavorable conditions for Google Gemini 3's performance.",
+      "support": "con",
+      "verifiability_score": 0.6,
+      "independence_score": 0.8,
+      "recency_score": 0.3,
+      "estimated_LLR": -0.5,
+      "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+    }
+  ],
+  "p_bayesian": 0.5502299921699274,
+  "planner_output": {
+    "market_slug": "google-gemini-3-humanity-last-exam-jan-31",
+    "market_question": "Google Gemini 3 score on Humanity's Last Exam by January 31?",
+    "p0_prior": 0.5,
+    "prior_justification": "Given the uncertainty surrounding AI performance metrics and the evolving nature of AI capabilities, a neutral prior reflects the lack of definitive information on the outcome.",
+    "subclaims": [
+      {
+        "id": "sc_1",
+        "text": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+        "direction": "pro"
+      },
+      {
+        "id": "sc_2",
+        "text": "Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+        "direction": "con"
+      },
+      {
+        "id": "sc_3",
+        "text": "Recent benchmarks indicate that AI models are improving rapidly, suggesting a favorable outcome for Gemini 3.",
+        "direction": "pro"
+      },
+      {
+        "id": "sc_4",
+        "text": "The complexity of the exam may expose weaknesses in Gemini 3's reasoning capabilities, leading to a lower score.",
+        "direction": "con"
+      },
+      {
+        "id": "sc_5",
+        "text": "Public and expert sentiment is increasingly optimistic about AI performance, which may positively influence Gemini 3's score.",
+        "direction": "pro"
+      },
+      {
+        "id": "sc_6",
+        "text": "Skepticism remains regarding AI's ability to fully grasp nuanced human concepts, potentially affecting Gemini 3's performance.",
+        "direction": "con"
+      }
+    ],
+    "key_variables": [
+      "AI training advancements",
+      "Exam complexity"
+    ],
+    "search_seeds": {
+      "pro": [
+        "2025 Google Gemini 3 performance",
+        "latest AI training advancements 2025",
+        "2025 AI benchmarks"
+      ],
+      "con": [
+        "2025 AI limitations",
+        "current challenges in AI understanding 2025",
+        "2025 skepticism about AI performance"
+      ],
+      "general": [
+        "2025 AI trends",
+        "recent developments in AI technology 2025",
+        "2025 context for AI assessments"
+      ]
+    },
+    "decision_criteria": [
+      "Performance metrics of AI models",
+      "Expert evaluations of AI capabilities"
+    ],
+    "reasoning_trace": "The plan aims to explore both the potential for high performance by Google Gemini 3 and the challenges it may face, using recent data and trends to inform the research."
+  },
+  "researcher_output": {
+    "pro": {
+      "evidence_items": [
+        {
+          "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+          "title": "Gemini 3.0\u2019s Code Generation Leap: What\u2019s Real & Next (2025 Update)",
+          "url": "https://skywork.ai/blog/gemini-3-code-generation-2025/?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "weak",
+          "claim_summary": "There is growing interest in Gemini 3.0, with indications of improved coding and planning capabilities. However, Google has not yet released official benchmarks or confirmed a public launch for Gemini 3.0, leaving its performance on the Humanity's Last Exam uncertain.",
+          "support": "neutral",
+          "verifiability_score": 0.5,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": 0.0,
+          "extraction_notes": "LLM-analyzed from weak source, recency=0.30"
+        },
+        {
+          "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+          "title": "Google\u2019s Gemini 3.0: Here Is All We Know and What to Expect | Fello AI",
+          "url": "https://felloai.com/2025/06/googles-gemini-3-0-here-is-all-we-know-and-what-to-expect/?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "secondary",
+          "claim_summary": "Google's Gemini series has rapidly evolved, with each version enhancing its capabilities, particularly in handling multimodal inputs. The advancements in AI training techniques suggest that Gemini 3.0 could achieve a high score on Humanity's Last Exam. The ambitious nature of the project positions it as a strong competitor to existing models.",
+          "support": "pro",
+          "verifiability_score": 0.6,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": 0.5,
+          "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+        },
+        {
+          "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+          "title": "Google Gemini 3.0: Release Date, Features & What's New [Updated Nov 2025]",
+          "url": "https://xole.ai/technology/gemini-3?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "weak",
+          "claim_summary": "Google Gemini 3.0 is expected to have enhanced multimodal capabilities and superior coding abilities, which may contribute to achieving a high score on Humanity's Last Exam. The CEO confirmed its release in 2025, indicating ongoing advancements in AI training techniques. Additionally, the stealth testing of models shows promising results in code generation.",
+          "support": "pro",
+          "verifiability_score": 0.5,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": 0.15,
+          "extraction_notes": "LLM-analyzed from weak source, recency=0.30"
+        },
+        {
+          "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+          "title": "What's next for AI in 2025 | MIT Technology Review",
+          "url": "https://www.technologyreview.com/2025/01/08/1109188/whats-next-for-ai-in-2025/?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "secondary",
+          "claim_summary": "The article discusses trends and predictions in AI but does not provide specific evidence regarding Google Gemini 3's performance on Humanity's Last Exam. It highlights the rapid advancements in AI training techniques without directly linking them to Gemini 3's potential score.",
+          "support": "neutral",
+          "verifiability_score": 0.6,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": 0.0,
+          "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+        },
+        {
+          "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+          "title": "How AI Is Shaping the Future of Corporate Training in 2025",
+          "url": "https://trainingindustry.com/articles/artificial-intelligence/how-ai-is-shaping-the-future-of-corporate-training-in-2025/?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "secondary",
+          "claim_summary": "Advancements in AI are transforming learning and development, making corporate training more adaptable and personalized. This evolution is crucial for equipping the workforce with necessary skills, suggesting that AI improvements could positively impact performance in assessments like Humanity's Last Exam.",
+          "support": "pro",
+          "verifiability_score": 0.6,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": 0.5,
+          "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+        },
+        {
+          "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+          "title": "2025 AI Cyber Benchmark | Wavestone",
+          "url": "https://www.wavestone.com/en/insight/2025-ai-cyber-benchmark/?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "secondary",
+          "claim_summary": "The excerpt discusses the accelerated adoption of AI by large organizations and the development of promising use cases. However, it does not provide specific evidence regarding Google Gemini 3's performance on Humanity's Last Exam or advancements in AI training techniques. The focus is on general trends in AI adoption and security risks.",
+          "support": "neutral",
+          "verifiability_score": 0.6,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": 0.0,
+          "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+        }
+      ],
+      "total_pro_count": 3,
+      "total_con_count": 0,
+      "total_pro_llr": 1.15,
+      "total_con_llr": 0.0,
+      "net_llr": 1.15,
+      "context_alignment_score": 0.0,
+      "research_timestamp": "2025-11-08 15:55:46.062252",
+      "search_strategy": "PRO search captured 6 items (pro=3, con=0, neutral=3); net LLR +1.15"
+    },
+    "con": {
+      "evidence_items": [
+        {
+          "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+          "title": "Gemini 3 Limitations 5 Key Challenges 2025 - skywork ai",
+          "url": "https://skywork.ai/blog/llm/gemini-3-limitations-5-key-challenges-2025/?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "weak",
+          "claim_summary": "The excerpt emphasizes the importance of understanding the limitations of tools like Gemini 3, suggesting that ignoring these limits can lead to significant challenges. It implies that without recognizing these constraints, users may encounter difficulties in achieving successful outcomes. This supports the notion that Gemini 3 may struggle with tasks requiring deep human context.",
+          "support": "pro",
+          "verifiability_score": 0.5,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": 0.15,
+          "extraction_notes": "LLM-analyzed from weak source, recency=0.30"
+        },
+        {
+          "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+          "title": "20 Pros & Cons of Gemini AI by Google [2025] - DigitalDefynd",
+          "url": "https://digitaldefynd.com/IQ/pros-cons-of-gemini-ai-by-google/?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "secondary",
+          "claim_summary": "The article highlights that Google Gemini 3 has achieved high pass rates on challenging tasks, indicating strong reasoning capabilities. However, it also suggests that there are inherent trade-offs and limitations in AI's understanding of human context. This implies potential struggles in scoring well on subjective assessments like Humanity's Last Exam.",
+          "support": "con",
+          "verifiability_score": 0.7,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": -0.4,
+          "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+        },
+        {
+          "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+          "title": "Gemini 3.0 and the Future of AI: 2025 Status & Readiness Guide",
+          "url": "https://skywork.ai/blog/gemini-3-0-future-ai-2025/?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "weak",
+          "claim_summary": "As of mid-October 2025, Google has not announced a Gemini 3.0 model, indicating potential limitations in its development. The lack of an official release suggests challenges in achieving a high score on Humanity's Last Exam. This uncertainty reflects inherent limitations in AI's understanding of human context.",
+          "support": "con",
+          "verifiability_score": 0.5,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": -0.15,
+          "extraction_notes": "LLM-analyzed from weak source, recency=0.30"
+        },
+        {
+          "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+          "title": "AI trends 2025: Adoption barriers and updated predictions",
+          "url": "https://www.deloitte.com/us/en/services/consulting/blogs/ai-adoption-challenges-ai-trends.html?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "secondary",
+          "claim_summary": "The article discusses the barriers to adopting advanced AI technologies and the complexities involved in their implementation. However, it does not provide specific evidence regarding Google Gemini 3's capabilities or limitations in understanding human context. Therefore, it remains ambiguous whether Gemini 3 will struggle on Humanity's Last Exam.",
+          "support": "neutral",
+          "verifiability_score": 0.6,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": 0.0,
+          "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+        },
+        {
+          "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+          "title": "AI Challenges Explained: Key Issues and Solutions for 2025",
+          "url": "https://www.upgrad.com/blog/top-challenges-in-artificial-intelligence/?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "secondary",
+          "claim_summary": "The article discusses various challenges faced by AI, including technical limitations that hinder its understanding of human context. These inherent limitations suggest that Google Gemini 3 may struggle to perform well on Humanity's Last Exam. The mention of ethical dilemmas and trust issues further indicates potential obstacles for AI in comprehending complex human scenarios.",
+          "support": "pro",
+          "verifiability_score": 0.65,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": 0.5,
+          "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+        },
+        {
+          "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+          "title": "Key findings from Stanford\u2019s 2025 AI Index Report | IBM",
+          "url": "https://www.ibm.com/think/news/stanford-hai-2025-ai-index-report?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "secondary",
+          "claim_summary": "The excerpt discusses the Stanford AI Index Report's findings on AI's role in society but does not provide specific evidence regarding Google Gemini 3's limitations in understanding human context or its potential performance on Humanity's Last Exam.",
+          "support": "neutral",
+          "verifiability_score": 0.65,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": 0.0,
+          "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+        }
+      ],
+      "total_pro_count": 2,
+      "total_con_count": 2,
+      "total_pro_llr": 0.65,
+      "total_con_llr": 0.55,
+      "net_llr": 0.09999999999999998,
+      "context_alignment_score": 0.0,
+      "research_timestamp": "2025-11-08 15:55:50.414283",
+      "search_strategy": "CON search captured 6 items (pro=2, con=2, neutral=2); net LLR +0.10"
+    },
+    "general": {
+      "evidence_items": [
+        {
+          "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+          "title": "Future of AI: 7 Key AI Trends For 2025 & 2026",
+          "url": "https://explodingtopics.com/blog/future-of-ai?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "secondary",
+          "claim_summary": "The article discusses the rapid evolution of AI and its potential economic impact, but does not provide specific evidence regarding Google Gemini 3's performance on Humanity's Last Exam or advancements in AI training techniques.",
+          "support": "neutral",
+          "verifiability_score": 0.6,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": 0.0,
+          "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+        },
+        {
+          "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+          "title": "What's next for AI in 2025 | MIT Technology Review",
+          "url": "https://www.technologyreview.com/2025/01/08/1109188/whats-next-for-ai-in-2025/?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "secondary",
+          "claim_summary": "The article discusses trends and predictions in AI but does not provide specific evidence regarding Google Gemini 3's performance or advancements in training techniques. It emphasizes the unpredictability of the AI industry, suggesting that outcomes are uncertain.",
+          "support": "neutral",
+          "verifiability_score": 0.6,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": 0.0,
+          "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+        },
+        {
+          "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+          "title": "Google Cloud predicts AI trends for businesses in 2025",
+          "url": "https://blog.google/products/google-cloud/ai-trends-business-2025/?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "weak",
+          "claim_summary": "The article discusses the anticipated impact of AI on businesses in 2025, highlighting advancements like multimodal AI and enhanced enterprise search. However, it does not provide specific evidence regarding Google Gemini 3's performance on Humanity's Last Exam or its training techniques. The claims are general and do not directly support the subclaim.",
+          "support": "neutral",
+          "verifiability_score": 0.5,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": 0.0,
+          "extraction_notes": "LLM-analyzed from weak source, recency=0.30"
+        },
+        {
+          "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+          "title": "6 AI trends you\u2019ll see more of in 2025",
+          "url": "https://news.microsoft.com/source/features/ai/6-ai-trends-youll-see-more-of-in-2025/?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "high_quality_secondary",
+          "claim_summary": "The article suggests that advancements in AI, including improved memory and reasoning capabilities, will enhance AI's effectiveness. This indicates a positive outlook for AI systems like Google Gemini 3 in achieving high scores on assessments such as Humanity's Last Exam. The evolution of AI into a more integral part of life further supports the potential for high performance.",
+          "support": "pro",
+          "verifiability_score": 0.8,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": 0.8,
+          "extraction_notes": "LLM-analyzed from high_quality_secondary source, recency=0.30"
+        },
+        {
+          "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+          "title": "Artificial Intelligence News -- ScienceDaily",
+          "url": "https://www.sciencedaily.com/news/computers_math/artificial_intelligence/?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "secondary",
+          "claim_summary": "The article discusses advancements in AI technology, such as a breakthrough optical processor that enhances data processing speeds. However, it does not specifically mention Google Gemini 3 or its performance on Humanity's Last Exam. Therefore, the evidence does not clearly support or oppose the subclaim.",
+          "support": "neutral",
+          "verifiability_score": 0.65,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": 0.0,
+          "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+        },
+        {
+          "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+          "title": "2025 AI Safety Index - Future of Life Institute",
+          "url": "https://futureoflife.org/ai-safety-index-summer-2025/?utm_source=valyu.ai&utm_medium=referral",
+          "published_date": "2025-11-08",
+          "source_type": "secondary",
+          "claim_summary": "The AI Safety Index rates Google DeepMind with a low score of C-1.76, indicating challenges in safety and security domains. This suggests that advancements in AI training techniques may not be sufficient for achieving a high score on Humanity's Last Exam. Overall, the ratings reflect unfavorable conditions for Google Gemini 3's performance.",
+          "support": "con",
+          "verifiability_score": 0.6,
+          "independence_score": 0.8,
+          "recency_score": 0.3,
+          "estimated_LLR": -0.5,
+          "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+        }
+      ],
+      "total_pro_count": 1,
+      "total_con_count": 1,
+      "total_pro_llr": 0.8,
+      "total_con_llr": 0.5,
+      "net_llr": 0.30000000000000004,
+      "context_alignment_score": 0.0,
+      "research_timestamp": "2025-11-08 15:56:50.264187",
+      "search_strategy": "GENERAL search captured 6 items (pro=1, con=1, neutral=4); net LLR +0.30"
+    }
+  },
+  "critic_output": {
+    "duplicate_clusters": [
+      [
+        "Gemini 3.0\u2019s Code Generation Leap: What\u2019s Real & Next (2025 Update)",
+        "Gemini 3 Limitations 5 Key Challenges 2025 - skywork ai",
+        "Gemini 3.0 and the Future of AI: 2025 Status & Readiness Guide"
+      ]
+    ],
+    "missing_topics": [],
+    "over_represented_sources": [
+      "skywork.ai"
+    ],
+    "correlation_warnings": [],
+    "follow_up_search_seeds": [
+      "2025 AI limitations",
+      "current challenges in AI understanding 2025",
+      "2025 skepticism about AI performance"
+    ],
+    "analysis_process": "Analyzed 20 evidence items, found correlation clusters and over-represented sources."
+  },
+  "analyst_output": {
+    "p0": 0.5,
+    "log_odds_prior": 0.0,
+    "evidence_summary": [
+      {
+        "id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+        "LLR": 0.0,
+        "weight": 0.12,
+        "adjusted_LLR": 0.0
+      },
+      {
+        "id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+        "LLR": 0.5,
+        "weight": 0.144,
+        "adjusted_LLR": 0.144
+      },
+      {
+        "id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+        "LLR": 0.15,
+        "weight": 0.12,
+        "adjusted_LLR": 0.036
+      },
+      {
+        "id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+        "LLR": 0.0,
+        "weight": 0.144,
+        "adjusted_LLR": 0.0
+      },
+      {
+        "id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+        "LLR": 0.5,
+        "weight": 0.144,
+        "adjusted_LLR": 0.144
+      },
+      {
+        "id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+        "LLR": 0.0,
+        "weight": 0.144,
+        "adjusted_LLR": 0.0
+      },
+      {
+        "id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+        "LLR": 0.15,
+        "weight": 0.12,
+        "adjusted_LLR": 0.036
+      },
+      {
+        "id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+        "LLR": -0.4,
+        "weight": 0.16799999999999998,
+        "adjusted_LLR": -0.1344
+      },
+      {
+        "id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+        "LLR": -0.15,
+        "weight": 0.12,
+        "adjusted_LLR": -0.036
+      },
+      {
+        "id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+        "LLR": 0.0,
+        "weight": 0.144,
+        "adjusted_LLR": 0.0
+      },
+      {
+        "id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+        "LLR": 0.5,
+        "weight": 0.156,
+        "adjusted_LLR": 0.156
+      },
+      {
+        "id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+        "LLR": 0.0,
+        "weight": 0.156,
+        "adjusted_LLR": 0.0
+      },
+      {
+        "id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+        "LLR": -0.5,
+        "weight": 0.144,
+        "adjusted_LLR": -0.144
+      }
+    ],
+    "correlation_adjustments": {
+      "method": "none",
+      "details": "No correlation detected"
+    },
+    "log_odds_posterior": 0.20159999999999992,
+    "p_bayesian": 0.5502299921699274,
+    "p_bayesian_low": 0.5377281507173371,
+    "p_bayesian_high": 0.5626687076798121,
+    "confidence_level": 0.8,
+    "p_neutral": 0.5,
+    "sensitivity_analysis": [
+      {
+        "scenario": "baseline",
+        "p": 0.5502299921699274
+      },
+      {
+        "scenario": "+25% LLR",
+        "p": 0.5626687076798121
+      },
+      {
+        "scenario": "-25% LLR",
+        "p": 0.5377281507173371
+      },
+      {
+        "scenario": "remove weakest 20%",
+        "p": 0.5413056481440466
+      }
+    ],
+    "calculation_steps": []
+  },
+  "arbitrage_output": [],
+  "reporter_output": {
+    "market_question": "Google Gemini 3 score on Humanity's Last Exam by January 31?",
+    "p_bayesian": 0.5502299921699274,
+    "confidence_interval": [
+      0.5377281507173371,
+      0.5626687076798121
+    ],
+    "top_pro_drivers": [
+      {
+        "direction": "pro",
+        "summary": "Advancements in AI training techniques suggest improved performance.",
+        "strength": "strong"
+      },
+      {
+        "direction": "pro",
+        "summary": "Rapid evolution of Gemini series enhances capabilities.",
+        "strength": "moderate"
+      },
+      {
+        "direction": "pro",
+        "summary": "Public sentiment is increasingly optimistic about AI performance.",
+        "strength": "weak"
+      }
+    ],
+    "top_con_drivers": [
+      {
+        "direction": "con",
+        "summary": "Inherent limitations in AI understanding of human context may hinder performance.",
+        "strength": "strong"
+      },
+      {
+        "direction": "con",
+        "summary": "Complexity of the exam could expose weaknesses in reasoning capabilities.",
+        "strength": "moderate"
+      },
+      {
+        "direction": "con",
+        "summary": "Skepticism remains regarding AI's ability to grasp nuanced human concepts.",
+        "strength": "weak"
+      }
+    ],
+    "arbitrage_summary": "No arbitrage opportunities detected.",
+    "next_steps": [],
+    "tldr": "Google Gemini 3 has a 55% chance of scoring high on Humanity's Last Exam by January 31, driven by advancements in AI training techniques.",
+    "executive_summary": "The analysis indicates a Bayesian probability of approximately 55% that Google Gemini 3 will achieve a high score on Humanity's Last Exam by January 31, with a confidence interval of [53.77%, 56.27%]. The strongest supporting evidence includes advancements in AI training techniques, while concerns about AI's limitations in understanding human context present critical uncertainties. No arbitrage opportunities were detected.",
+    "full_json": {
+      "planner_output": {
+        "market_slug": "google-gemini-3-humanity-last-exam-jan-31",
+        "market_question": "Google Gemini 3 score on Humanity's Last Exam by January 31?",
+        "p0_prior": 0.5,
+        "prior_justification": "Given the uncertainty surrounding AI performance metrics and the evolving nature of AI capabilities, a neutral prior reflects the lack of definitive information on the outcome.",
+        "subclaims": [
+          {
+            "id": "sc_1",
+            "text": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+            "direction": "pro"
+          },
+          {
+            "id": "sc_2",
+            "text": "Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+            "direction": "con"
+          },
+          {
+            "id": "sc_3",
+            "text": "Recent benchmarks indicate that AI models are improving rapidly, suggesting a favorable outcome for Gemini 3.",
+            "direction": "pro"
+          },
+          {
+            "id": "sc_4",
+            "text": "The complexity of the exam may expose weaknesses in Gemini 3's reasoning capabilities, leading to a lower score.",
+            "direction": "con"
+          },
+          {
+            "id": "sc_5",
+            "text": "Public and expert sentiment is increasingly optimistic about AI performance, which may positively influence Gemini 3's score.",
+            "direction": "pro"
+          },
+          {
+            "id": "sc_6",
+            "text": "Skepticism remains regarding AI's ability to fully grasp nuanced human concepts, potentially affecting Gemini 3's performance.",
+            "direction": "con"
+          }
+        ],
+        "key_variables": [
+          "AI training advancements",
+          "Exam complexity"
+        ],
+        "search_seeds": {
+          "pro": [
+            "2025 Google Gemini 3 performance",
+            "latest AI training advancements 2025",
+            "2025 AI benchmarks"
+          ],
+          "con": [
+            "2025 AI limitations",
+            "current challenges in AI understanding 2025",
+            "2025 skepticism about AI performance"
+          ],
+          "general": [
+            "2025 AI trends",
+            "recent developments in AI technology 2025",
+            "2025 context for AI assessments"
+          ]
+        },
+        "decision_criteria": [
+          "Performance metrics of AI models",
+          "Expert evaluations of AI capabilities"
+        ],
+        "reasoning_trace": "The plan aims to explore both the potential for high performance by Google Gemini 3 and the challenges it may face, using recent data and trends to inform the research."
+      },
+      "researcher_output": {
+        "pro": {
+          "evidence_items": [
+            {
+              "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+              "title": "Gemini 3.0\u2019s Code Generation Leap: What\u2019s Real & Next (2025 Update)",
+              "url": "https://skywork.ai/blog/gemini-3-code-generation-2025/?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "weak",
+              "claim_summary": "There is growing interest in Gemini 3.0, with indications of improved coding and planning capabilities. However, Google has not yet released official benchmarks or confirmed a public launch for Gemini 3.0, leaving its performance on the Humanity's Last Exam uncertain.",
+              "support": "neutral",
+              "verifiability_score": 0.5,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": 0.0,
+              "extraction_notes": "LLM-analyzed from weak source, recency=0.30"
+            },
+            {
+              "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+              "title": "Google\u2019s Gemini 3.0: Here Is All We Know and What to Expect | Fello AI",
+              "url": "https://felloai.com/2025/06/googles-gemini-3-0-here-is-all-we-know-and-what-to-expect/?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "secondary",
+              "claim_summary": "Google's Gemini series has rapidly evolved, with each version enhancing its capabilities, particularly in handling multimodal inputs. The advancements in AI training techniques suggest that Gemini 3.0 could achieve a high score on Humanity's Last Exam. The ambitious nature of the project positions it as a strong competitor to existing models.",
+              "support": "pro",
+              "verifiability_score": 0.6,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": 0.5,
+              "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+            },
+            {
+              "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+              "title": "Google Gemini 3.0: Release Date, Features & What's New [Updated Nov 2025]",
+              "url": "https://xole.ai/technology/gemini-3?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "weak",
+              "claim_summary": "Google Gemini 3.0 is expected to have enhanced multimodal capabilities and superior coding abilities, which may contribute to achieving a high score on Humanity's Last Exam. The CEO confirmed its release in 2025, indicating ongoing advancements in AI training techniques. Additionally, the stealth testing of models shows promising results in code generation.",
+              "support": "pro",
+              "verifiability_score": 0.5,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": 0.15,
+              "extraction_notes": "LLM-analyzed from weak source, recency=0.30"
+            },
+            {
+              "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+              "title": "What's next for AI in 2025 | MIT Technology Review",
+              "url": "https://www.technologyreview.com/2025/01/08/1109188/whats-next-for-ai-in-2025/?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "secondary",
+              "claim_summary": "The article discusses trends and predictions in AI but does not provide specific evidence regarding Google Gemini 3's performance on Humanity's Last Exam. It highlights the rapid advancements in AI training techniques without directly linking them to Gemini 3's potential score.",
+              "support": "neutral",
+              "verifiability_score": 0.6,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": 0.0,
+              "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+            },
+            {
+              "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+              "title": "How AI Is Shaping the Future of Corporate Training in 2025",
+              "url": "https://trainingindustry.com/articles/artificial-intelligence/how-ai-is-shaping-the-future-of-corporate-training-in-2025/?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "secondary",
+              "claim_summary": "Advancements in AI are transforming learning and development, making corporate training more adaptable and personalized. This evolution is crucial for equipping the workforce with necessary skills, suggesting that AI improvements could positively impact performance in assessments like Humanity's Last Exam.",
+              "support": "pro",
+              "verifiability_score": 0.6,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": 0.5,
+              "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+            },
+            {
+              "subclaim_id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+              "title": "2025 AI Cyber Benchmark | Wavestone",
+              "url": "https://www.wavestone.com/en/insight/2025-ai-cyber-benchmark/?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "secondary",
+              "claim_summary": "The excerpt discusses the accelerated adoption of AI by large organizations and the development of promising use cases. However, it does not provide specific evidence regarding Google Gemini 3's performance on Humanity's Last Exam or advancements in AI training techniques. The focus is on general trends in AI adoption and security risks.",
+              "support": "neutral",
+              "verifiability_score": 0.6,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": 0.0,
+              "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+            }
+          ],
+          "total_pro_count": 3,
+          "total_con_count": 0,
+          "total_pro_llr": 1.15,
+          "total_con_llr": 0.0,
+          "net_llr": 1.15,
+          "context_alignment_score": 0.0,
+          "research_timestamp": "2025-11-08 15:55:46.062252",
+          "search_strategy": "PRO search captured 6 items (pro=3, con=0, neutral=3); net LLR +1.15"
+        },
+        "con": {
+          "evidence_items": [
+            {
+              "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+              "title": "Gemini 3 Limitations 5 Key Challenges 2025 - skywork ai",
+              "url": "https://skywork.ai/blog/llm/gemini-3-limitations-5-key-challenges-2025/?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "weak",
+              "claim_summary": "The excerpt emphasizes the importance of understanding the limitations of tools like Gemini 3, suggesting that ignoring these limits can lead to significant challenges. It implies that without recognizing these constraints, users may encounter difficulties in achieving successful outcomes. This supports the notion that Gemini 3 may struggle with tasks requiring deep human context.",
+              "support": "pro",
+              "verifiability_score": 0.5,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": 0.15,
+              "extraction_notes": "LLM-analyzed from weak source, recency=0.30"
+            },
+            {
+              "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+              "title": "20 Pros & Cons of Gemini AI by Google [2025] - DigitalDefynd",
+              "url": "https://digitaldefynd.com/IQ/pros-cons-of-gemini-ai-by-google/?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "secondary",
+              "claim_summary": "The article highlights that Google Gemini 3 has achieved high pass rates on challenging tasks, indicating strong reasoning capabilities. However, it also suggests that there are inherent trade-offs and limitations in AI's understanding of human context. This implies potential struggles in scoring well on subjective assessments like Humanity's Last Exam.",
+              "support": "con",
+              "verifiability_score": 0.7,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": -0.4,
+              "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+            },
+            {
+              "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+              "title": "Gemini 3.0 and the Future of AI: 2025 Status & Readiness Guide",
+              "url": "https://skywork.ai/blog/gemini-3-0-future-ai-2025/?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "weak",
+              "claim_summary": "As of mid-October 2025, Google has not announced a Gemini 3.0 model, indicating potential limitations in its development. The lack of an official release suggests challenges in achieving a high score on Humanity's Last Exam. This uncertainty reflects inherent limitations in AI's understanding of human context.",
+              "support": "con",
+              "verifiability_score": 0.5,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": -0.15,
+              "extraction_notes": "LLM-analyzed from weak source, recency=0.30"
+            },
+            {
+              "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+              "title": "AI trends 2025: Adoption barriers and updated predictions",
+              "url": "https://www.deloitte.com/us/en/services/consulting/blogs/ai-adoption-challenges-ai-trends.html?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "secondary",
+              "claim_summary": "The article discusses the barriers to adopting advanced AI technologies and the complexities involved in their implementation. However, it does not provide specific evidence regarding Google Gemini 3's capabilities or limitations in understanding human context. Therefore, it remains ambiguous whether Gemini 3 will struggle on Humanity's Last Exam.",
+              "support": "neutral",
+              "verifiability_score": 0.6,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": 0.0,
+              "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+            },
+            {
+              "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+              "title": "AI Challenges Explained: Key Issues and Solutions for 2025",
+              "url": "https://www.upgrad.com/blog/top-challenges-in-artificial-intelligence/?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "secondary",
+              "claim_summary": "The article discusses various challenges faced by AI, including technical limitations that hinder its understanding of human context. These inherent limitations suggest that Google Gemini 3 may struggle to perform well on Humanity's Last Exam. The mention of ethical dilemmas and trust issues further indicates potential obstacles for AI in comprehending complex human scenarios.",
+              "support": "pro",
+              "verifiability_score": 0.65,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": 0.5,
+              "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+            },
+            {
+              "subclaim_id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+              "title": "Key findings from Stanford\u2019s 2025 AI Index Report | IBM",
+              "url": "https://www.ibm.com/think/news/stanford-hai-2025-ai-index-report?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "secondary",
+              "claim_summary": "The excerpt discusses the Stanford AI Index Report's findings on AI's role in society but does not provide specific evidence regarding Google Gemini 3's limitations in understanding human context or its potential performance on Humanity's Last Exam.",
+              "support": "neutral",
+              "verifiability_score": 0.65,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": 0.0,
+              "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+            }
+          ],
+          "total_pro_count": 2,
+          "total_con_count": 2,
+          "total_pro_llr": 0.65,
+          "total_con_llr": 0.55,
+          "net_llr": 0.09999999999999998,
+          "context_alignment_score": 0.0,
+          "research_timestamp": "2025-11-08 15:55:50.414283",
+          "search_strategy": "CON search captured 6 items (pro=2, con=2, neutral=2); net LLR +0.10"
+        },
+        "general": {
+          "evidence_items": [
+            {
+              "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+              "title": "Future of AI: 7 Key AI Trends For 2025 & 2026",
+              "url": "https://explodingtopics.com/blog/future-of-ai?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "secondary",
+              "claim_summary": "The article discusses the rapid evolution of AI and its potential economic impact, but does not provide specific evidence regarding Google Gemini 3's performance on Humanity's Last Exam or advancements in AI training techniques.",
+              "support": "neutral",
+              "verifiability_score": 0.6,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": 0.0,
+              "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+            },
+            {
+              "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+              "title": "What's next for AI in 2025 | MIT Technology Review",
+              "url": "https://www.technologyreview.com/2025/01/08/1109188/whats-next-for-ai-in-2025/?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "secondary",
+              "claim_summary": "The article discusses trends and predictions in AI but does not provide specific evidence regarding Google Gemini 3's performance or advancements in training techniques. It emphasizes the unpredictability of the AI industry, suggesting that outcomes are uncertain.",
+              "support": "neutral",
+              "verifiability_score": 0.6,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": 0.0,
+              "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+            },
+            {
+              "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+              "title": "Google Cloud predicts AI trends for businesses in 2025",
+              "url": "https://blog.google/products/google-cloud/ai-trends-business-2025/?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "weak",
+              "claim_summary": "The article discusses the anticipated impact of AI on businesses in 2025, highlighting advancements like multimodal AI and enhanced enterprise search. However, it does not provide specific evidence regarding Google Gemini 3's performance on Humanity's Last Exam or its training techniques. The claims are general and do not directly support the subclaim.",
+              "support": "neutral",
+              "verifiability_score": 0.5,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": 0.0,
+              "extraction_notes": "LLM-analyzed from weak source, recency=0.30"
+            },
+            {
+              "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+              "title": "6 AI trends you\u2019ll see more of in 2025",
+              "url": "https://news.microsoft.com/source/features/ai/6-ai-trends-youll-see-more-of-in-2025/?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "high_quality_secondary",
+              "claim_summary": "The article suggests that advancements in AI, including improved memory and reasoning capabilities, will enhance AI's effectiveness. This indicates a positive outlook for AI systems like Google Gemini 3 in achieving high scores on assessments such as Humanity's Last Exam. The evolution of AI into a more integral part of life further supports the potential for high performance.",
+              "support": "pro",
+              "verifiability_score": 0.8,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": 0.8,
+              "extraction_notes": "LLM-analyzed from high_quality_secondary source, recency=0.30"
+            },
+            {
+              "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+              "title": "Artificial Intelligence News -- ScienceDaily",
+              "url": "https://www.sciencedaily.com/news/computers_math/artificial_intelligence/?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "secondary",
+              "claim_summary": "The article discusses advancements in AI technology, such as a breakthrough optical processor that enhances data processing speeds. However, it does not specifically mention Google Gemini 3 or its performance on Humanity's Last Exam. Therefore, the evidence does not clearly support or oppose the subclaim.",
+              "support": "neutral",
+              "verifiability_score": 0.65,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": 0.0,
+              "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+            },
+            {
+              "subclaim_id": "Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+              "title": "2025 AI Safety Index - Future of Life Institute",
+              "url": "https://futureoflife.org/ai-safety-index-summer-2025/?utm_source=valyu.ai&utm_medium=referral",
+              "published_date": "2025-11-08",
+              "source_type": "secondary",
+              "claim_summary": "The AI Safety Index rates Google DeepMind with a low score of C-1.76, indicating challenges in safety and security domains. This suggests that advancements in AI training techniques may not be sufficient for achieving a high score on Humanity's Last Exam. Overall, the ratings reflect unfavorable conditions for Google Gemini 3's performance.",
+              "support": "con",
+              "verifiability_score": 0.6,
+              "independence_score": 0.8,
+              "recency_score": 0.3,
+              "estimated_LLR": -0.5,
+              "extraction_notes": "LLM-analyzed from secondary source, recency=0.30"
+            }
+          ],
+          "total_pro_count": 1,
+          "total_con_count": 1,
+          "total_pro_llr": 0.8,
+          "total_con_llr": 0.5,
+          "net_llr": 0.30000000000000004,
+          "context_alignment_score": 0.0,
+          "research_timestamp": "2025-11-08 15:56:50.264187",
+          "search_strategy": "GENERAL search captured 6 items (pro=1, con=1, neutral=4); net LLR +0.30"
+        }
+      },
+      "critic_output": {
+        "duplicate_clusters": [
+          [
+            "Gemini 3.0\u2019s Code Generation Leap: What\u2019s Real & Next (2025 Update)",
+            "Gemini 3 Limitations 5 Key Challenges 2025 - skywork ai",
+            "Gemini 3.0 and the Future of AI: 2025 Status & Readiness Guide"
+          ]
+        ],
+        "missing_topics": [],
+        "over_represented_sources": [
+          "skywork.ai"
+        ],
+        "correlation_warnings": [],
+        "follow_up_search_seeds": [
+          "2025 AI limitations",
+          "current challenges in AI understanding 2025",
+          "2025 skepticism about AI performance"
+        ],
+        "analysis_process": "Analyzed 20 evidence items, found correlation clusters and over-represented sources."
+      },
+      "analyst_output": {
+        "p0": 0.5,
+        "log_odds_prior": 0.0,
+        "evidence_summary": [
+          {
+            "id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+            "LLR": 0.0,
+            "weight": 0.12,
+            "adjusted_LLR": 0.0
+          },
+          {
+            "id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+            "LLR": 0.5,
+            "weight": 0.144,
+            "adjusted_LLR": 0.144
+          },
+          {
+            "id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+            "LLR": 0.15,
+            "weight": 0.12,
+            "adjusted_LLR": 0.036
+          },
+          {
+            "id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+            "LLR": 0.0,
+            "weight": 0.144,
+            "adjusted_LLR": 0.0
+          },
+          {
+            "id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+            "LLR": 0.5,
+            "weight": 0.144,
+            "adjusted_LLR": 0.144
+          },
+          {
+            "id": "Evidence supporting YES: Google Gemini 3 will achieve a high score on Humanity's Last Exam due to advancements in AI training techniques.",
+            "LLR": 0.0,
+            "weight": 0.144,
+            "adjusted_LLR": 0.0
+          },
+          {
+            "id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+            "LLR": 0.15,
+            "weight": 0.12,
+            "adjusted_LLR": 0.036
+          },
+          {
+            "id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+            "LLR": -0.4,
+            "weight": 0.16799999999999998,
+            "adjusted_LLR": -0.1344
+          },
+          {
+            "id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+            "LLR": -0.15,
+            "weight": 0.12,
+            "adjusted_LLR": -0.036
+          },
+          {
+            "id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+            "LLR": 0.0,
+            "weight": 0.144,
+            "adjusted_LLR": 0.0
+          },
+          {
+            "id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+            "LLR": 0.5,
+            "weight": 0.156,
+            "adjusted_LLR": 0.156
+          },
+          {
+            "id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+            "LLR": 0.0,
+            "weight": 0.156,
+            "adjusted_LLR": 0.0
+          },
+          {
+            "id": "Evidence supporting NO: Google Gemini 3 may struggle to score well on Humanity's Last Exam due to inherent limitations in AI understanding of human context.",
+            "LLR": -0.5,
+            "weight": 0.144,
+            "adjusted_LLR": -0.144
+          }
+        ],
+        "correlation_adjustments": {
+          "method": "none",
+          "details": "No correlation detected"
+        },
+        "log_odds_posterior": 0.20159999999999992,
+        "p_bayesian": 0.5502299921699274,
+        "p_bayesian_low": 0.5377281507173371,
+        "p_bayesian_high": 0.5626687076798121,
+        "confidence_level": 0.8,
+        "p_neutral": 0.5,
+        "sensitivity_analysis": [
+          {
+            "scenario": "baseline",
+            "p": 0.5502299921699274
+          },
+          {
+            "scenario": "+25% LLR",
+            "p": 0.5626687076798121
+          },
+          {
+            "scenario": "-25% LLR",
+            "p": 0.5377281507173371
+          },
+          {
+            "scenario": "remove weakest 20%",
+            "p": 0.5413056481440466
+          }
+        ],
+        "calculation_steps": []
+      },
+      "arbitrage_opportunities": [],
+      "threshold_probabilities": {}
+    },
+    "disclaimer": "NOT FINANCIAL ADVICE"
+  },
+  "execution_time_seconds": 358.020614,
+  "autonomous_workflow": true
+}
