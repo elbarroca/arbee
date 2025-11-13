@@ -224,29 +224,64 @@ class PolymarketClient:
 
     async def get_markets(self, limit=200, min_liquidity=100, max_spread=0.98, **filters) -> List[Dict]:
         """Get markets enriched with orderbooks, sorted by volume"""
-        # Set default date filters
-        if 'end_date_min' not in filters:
-            filters['end_date_min'] = datetime.now().strftime('%Y-%m-%d')
-        if 'end_date_max' not in filters:
-            filters['end_date_max'] = (datetime.now() + timedelta(days=365)).strftime('%Y-%m-%d')
+        # Remove restrictive date filtering - get ALL active markets instead
+        # This allows us to get current markets like "Will Trump create a tariff dividend in 2025?"
+        # that may end in 2025 or later
 
         # Fetch more markets than needed to allow for filtering
-        markets = await self.gamma.get_markets(active=True, limit=limit * 3, **filters)
+        markets = await self.gamma.get_markets(active=True, limit=limit * 5, **filters)
 
-        # Sort by volume descending to get highest volume markets first
-        markets.sort(key=lambda m: float(m.get('volumeNum', m.get('volume', 0)) or 0), reverse=True)
+        # Filter out obviously old markets and prioritize current ones
+        current_markets = []
+        old_keywords = ['2020', '2021', '2022', '2023', 'biden', 'trump 2020', '2020 election']
+
+        for market in markets:
+            question = market.get('question', '').lower()
+            # Skip obviously old markets
+            if any(old_term in question for old_term in old_keywords):
+                continue
+            # Prioritize markets with 2024, 2025, current events
+            if any(current_term in question for current_term in ['2024', '2025', 'shutdown', 'fed', 'trump', 'bitcoin', 'nvidia']):
+                current_markets.insert(0, market)  # Add to front
+            else:
+                current_markets.append(market)
+
+        markets = current_markets[:limit * 5]  # Limit to prevent too many markets
 
         enriched = []
+        basic_markets = []
+
         for market in markets[:limit * 10]:
-            if len(enriched) >= limit:
+            if len(basic_markets) >= limit:
                 break
 
+            # Try to enrich with orderbook data first
             result = await self._enrich_market(market, min_liquidity, max_spread)
             if result:
                 enriched.append(result)
+                basic_markets.append(result)
+            else:
+                # If enrichment fails, still include basic market data
+                # This ensures we get current markets like "Trump 2025" even without orderbooks
+                basic_market = {
+                    'market_slug': market.get('slug', ''),
+                    'question': market.get('question', ''),
+                    'category': market.get('category', ''),
+                    'yes_probability': float(market.get('outcomePrices', [0.5, 0.5])[1]) * 100,
+                    'total_liquidity': 0,  # No orderbook data
+                    'total_volume': float(market.get('volumeNum', market.get('volume', 0)) or 0),
+                    'spread': 0,  # Unknown
+                    'spread_bps': 0,
+                    'best_bid': 0.5,  # Default
+                    'best_ask': 0.5,  # Default
+                    'midpoint_price': 0.5,
+                    'end_date': market.get('endDate', ''),
+                    'has_orderbook': False  # Flag indicating no orderbook data
+                }
+                basic_markets.append(basic_market)
 
-        logger.info(f"Enriched {len(enriched)} markets")
-        return enriched
+        logger.info(f"Enriched {len(enriched)} markets, total basic markets: {len(basic_markets)}")
+        return basic_markets
 
     # ========== Formatting & Enrichment ==========
 

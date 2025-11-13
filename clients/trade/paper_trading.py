@@ -17,7 +17,7 @@ try:
 except ImportError:
     HAS_PERFORMANCE_LIBS = False
 
-from utils.copy_trading import TradeSignal
+from betting.copy_trading import TradeSignal
 from database.client import SupabaseClient
 from ..polymarket import PolymarketClient
 from config import settings

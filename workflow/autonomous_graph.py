@@ -24,7 +24,7 @@ from clients.polymarket import PolymarketClient
 from clients.web3.wallet_tracker import WalletTrackerClient
 from clients.trade.trade_executor import TradeExecutor
 from agents.copy_trading_agent import CopyTradingAgent
-from utils.copy_trading import TradeSignalProcessor
+from betting.copy_trading import TradeSignalProcessor
 from utils.memory import create_store_from_config
 
 from utils.memory import get_memory_manager

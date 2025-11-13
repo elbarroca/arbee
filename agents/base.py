@@ -153,8 +153,9 @@ class AutonomousReActAgent(ABC):
         # Auto-create store if not provided and memory persistence is enabled
         if store is None:
             from config.settings import settings as global_settings
-            from config.system_constants import ENABLE_MEMORY_PERSISTENCE
-            if getattr(global_settings, "ENABLE_MEMORY_PERSISTENCE", ENABLE_MEMORY_PERSISTENCE):
+            # Check if memory persistence is enabled
+            enable_persistence = getattr(global_settings, "ENABLE_MEMORY_PERSISTENCE", True)
+            if enable_persistence:
                 try:
                     from utils.memory import create_store_from_config
                     store = create_store_from_config()

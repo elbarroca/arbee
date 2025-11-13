@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 
 from api.dependencies import get_trade_processor, get_copy_agent, get_trade_executor
 from api.schemas.webhooks import WebhookProcessingResponse
-from utils.copy_trading import TradeSignalProcessor
+from betting.copy_trading import TradeSignalProcessor
 from agents.copy_trading_agent import CopyTradingAgent
 from clients.trade.trade_executor import TradeExecutor
 from config.settings import settings
@@ -45,14 +45,6 @@ async def process_webhook_event(
     if provider == "alchemy":
         from clients.web3.alchemy import AlchemyWebhooksClient
         client = AlchemyWebhooksClient()
-        parsed_event = client.parse_webhook_event(event_data)
-    elif provider == "quicknode":
-        from clients.web3.quicknode import QuickNodeWebhooksClient
-        client = QuickNodeWebhooksClient()
-        parsed_event = client.parse_webhook_event(event_data)
-    elif provider == "moralis":
-        from clients.web3.moralis import MoralisStreamsClient
-        client = MoralisStreamsClient()
         parsed_event = client.parse_webhook_event(event_data)
     else:
         logger.warning(f"Unknown provider: {provider}")

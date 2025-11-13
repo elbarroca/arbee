@@ -9,7 +9,7 @@ from datetime import datetime
 
 from clients.web3.wallet_tracker import WalletTrackerClient
 from agents.copy_trading_agent import CopyTradingAgent
-from utils.copy_trading import TradeSignalProcessor
+from betting.copy_trading import TradeSignalProcessor
 from utils.rich_logging import (
     log_tool_start,
     log_tool_success,

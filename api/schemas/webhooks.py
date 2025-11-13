@@ -49,3 +49,12 @@ class WebhookProcessingResponse(BaseModel):
     side: Optional[str] = None
     size_usd: Optional[float] = None
 
+
+
+
+
+
+
+
+
+

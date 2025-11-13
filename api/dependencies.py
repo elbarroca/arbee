@@ -8,7 +8,7 @@ from typing import Annotated
 from fastapi import Depends
 from clients.web3.wallet_tracker import WalletTrackerClient
 from agents.copy_trading_agent import CopyTradingAgent
-from utils.copy_trading import TradeSignalProcessor
+from betting.copy_trading import TradeSignalProcessor
 from database.client import SupabaseClient
 from clients.trade.trade_executor import TradeExecutor
 from clients.polymarket import PolymarketClient

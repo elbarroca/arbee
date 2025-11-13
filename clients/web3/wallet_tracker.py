@@ -1,15 +1,13 @@
 """
 Wallet Tracker API Client
 Tracks known insider wallets and detects activity patterns.
-Integrates with Alchemy, QuickNode, and Moralis webhooks for real-time tracking.
+Integrates with Alchemy webhooks for real-time tracking.
 """
 from typing import List, Dict, Any, Optional, Callable
 from datetime import datetime, timedelta
 import logging
 from config.settings import settings
-from .alchemy import AlchemyWebhooksClient, AlchemyWebhooksError
-from .quicknode import QuickNodeWebhooksClient, QuickNodeWebhooksError
-from .moralis import MoralisStreamsClient, MoralisStreamsError
+from .alchemy import AlchemyWebhooksClient
 
 logger = logging.getLogger(__name__)
 
@@ -18,14 +16,13 @@ class WalletTrackerClient:
     """
     Client for tracking wallet activity on prediction markets.
     
-    Integrates with multiple webhook providers (Alchemy, QuickNode, Moralis)
-    for redundancy and reliability. Automatically falls back if one provider fails.
+    Integrates with Alchemy webhooks for real-time wallet tracking.
     """
 
     def __init__(
         self,
         api_key: Optional[str] = None,
-        provider: str = "alchemy",  # "alchemy", "quicknode", "moralis", or "auto"
+        provider: str = "alchemy",  # "alchemy" or "auto"
         webhook_url: Optional[str] = None
     ):
         """
@@ -33,7 +30,7 @@ class WalletTrackerClient:
         
         Args:
             api_key: API key (provider-specific, from settings if not provided)
-            provider: Webhook provider to use ("alchemy", "quicknode", "moralis", "auto")
+            provider: Webhook provider to use ("alchemy" or "auto")
             webhook_url: Webhook endpoint URL for receiving events
         """
         self.provider = provider
@@ -42,8 +39,6 @@ class WalletTrackerClient:
         
         # Initialize providers
         self.alchemy_client = None
-        self.quicknode_client = None
-        self.moralis_client = None
         
         # Enable providers based on configuration
         if provider in ["alchemy", "auto"]:
@@ -53,22 +48,6 @@ class WalletTrackerClient:
                     self.enabled = True
             except Exception as e:
                 logger.warning(f"Alchemy client initialization failed: {e}")
-        
-        if provider in ["quicknode", "auto"]:
-            try:
-                self.quicknode_client = QuickNodeWebhooksClient(webhook_url=self.webhook_url)
-                if self.quicknode_client.api_key:
-                    self.enabled = True
-            except Exception as e:
-                logger.warning(f"QuickNode client initialization failed: {e}")
-        
-        if provider in ["moralis", "auto"]:
-            try:
-                self.moralis_client = MoralisStreamsClient(webhook_url=self.webhook_url)
-                if self.moralis_client.api_key:
-                    self.enabled = True
-            except Exception as e:
-                logger.warning(f"Moralis client initialization failed: {e}")
         
         # Fallback to enabled flag from settings
         if not hasattr(self, 'enabled'):
@@ -178,7 +157,7 @@ class WalletTrackerClient:
         
         Args:
             wallet_address: Wallet address to subscribe to
-            provider: Provider to use ("alchemy", "quicknode", "moralis", or None for auto)
+            provider: Provider to use ("alchemy" or None for auto)
             
         Returns:
             Dict with subscription details (webhook_id, provider, etc.)
@@ -189,7 +168,7 @@ class WalletTrackerClient:
         
         provider = provider or self.provider
         
-        # Try providers in order of preference
+        # Try Alchemy provider
         if provider == "auto" or provider == "alchemy":
             if self.alchemy_client and self.alchemy_client.api_key:
                 try:
@@ -202,52 +181,6 @@ class WalletTrackerClient:
                     return {"success": True, "provider": "alchemy", **result}
                 except Exception as e:
                     logger.warning(f"Alchemy subscription failed: {e}")
-                    if provider != "auto":
-                        raise
-        
-        if provider == "auto" or provider == "quicknode":
-            if self.quicknode_client and self.quicknode_client.api_key:
-                try:
-                    result = await self.quicknode_client.create_address_webhook(wallet_address)
-                    self._subscribed_wallets[wallet_address] = {
-                        "provider": "quicknode",
-                        "webhook_id": result.get("id") or result.get("webhook_id"),
-                        "subscribed_at": datetime.utcnow().isoformat()
-                    }
-                    return {"success": True, "provider": "quicknode", **result}
-                except Exception as e:
-                    logger.warning(f"QuickNode subscription failed: {e}")
-                    if provider != "auto":
-                        raise
-        
-        if provider == "auto" or provider == "moralis":
-            if self.moralis_client and self.moralis_client.api_key:
-                try:
-                    # Moralis supports multiple addresses in one stream
-                    # Check if we already have a stream we can add to
-                    existing_streams = await self.moralis_client.list_streams()
-                    stream_id = None
-                    
-                    # Try to find existing stream for copy trading
-                    for stream in existing_streams:
-                        if stream.get("tag") == "polymarket_copy_trading":
-                            stream_id = stream.get("id")
-                            break
-                    
-                    if stream_id:
-                        result = await self.moralis_client.add_addresses_to_stream(stream_id, [wallet_address])
-                    else:
-                        result = await self.moralis_client.create_address_stream([wallet_address])
-                        stream_id = result.get("id") or result.get("streamId")
-                    
-                    self._subscribed_wallets[wallet_address] = {
-                        "provider": "moralis",
-                        "webhook_id": stream_id,
-                        "subscribed_at": datetime.utcnow().isoformat()
-                    }
-                    return {"success": True, "provider": "moralis", "stream_id": stream_id}
-                except Exception as e:
-                    logger.warning(f"Moralis subscription failed: {e}")
                     if provider != "auto":
                         raise
         
@@ -266,7 +199,7 @@ class WalletTrackerClient:
         if not webhook_event:
             return None
         
-        # Try to parse with each provider's parser
+        # Try to parse with Alchemy parser
         parsed = None
         
         if self.alchemy_client:
@@ -274,22 +207,6 @@ class WalletTrackerClient:
                 parsed = self.alchemy_client.parse_webhook_event(webhook_event)
                 if parsed:
                     parsed["provider"] = "alchemy"
-            except Exception:
-                pass
-        
-        if not parsed and self.quicknode_client:
-            try:
-                parsed = self.quicknode_client.parse_webhook_event(webhook_event)
-                if parsed:
-                    parsed["provider"] = "quicknode"
-            except Exception:
-                pass
-        
-        if not parsed and self.moralis_client:
-            try:
-                parsed = self.moralis_client.parse_webhook_event(webhook_event)
-                if parsed:
-                    parsed["provider"] = "moralis"
             except Exception:
                 pass
         

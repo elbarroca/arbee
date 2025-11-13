@@ -9,7 +9,7 @@ from collections import defaultdict
 from pydantic import BaseModel, Field
 from ..polymarket import PolymarketClient, PolymarketError
 from .paper_trading import PaperTradingLogger
-from utils.copy_trading import TradeSignal
+from betting.copy_trading import TradeSignal
 from config import settings
 
 logger = logging.getLogger(__name__)

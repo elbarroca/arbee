@@ -11,9 +11,9 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 import logging
 
-from api_clients.kalshi import KalshiClient
-from api_clients.polymarket import PolymarketClient
-from api_clients.valyu import ValyuResearchClient
+from clients.kalshi import KalshiClient
+from clients.polymarket import PolymarketClient
+from clients.valyu import ValyuResearchClient
 
 logger = logging.getLogger(__name__)
 

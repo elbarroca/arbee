@@ -6,8 +6,8 @@ import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime, timedelta
 from pydantic import BaseModel, Field
-from api_clients.polymarket import PolymarketClient
-from api_clients.web3.wallet_tracker import WalletTrackerClient
+from clients.polymarket import PolymarketClient
+from clients.web3.wallet_tracker import WalletTrackerClient
 from agents.copy_trading_agent import CopyTradingAgent
 from utils.token_resolver import get_token_resolver
 from config import settings

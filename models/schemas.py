@@ -475,3 +475,155 @@ class WorkflowState(TypedDict, total=False):
     analyst_output: AnalystOutput
     arbitrage_output: List[Any]
     reporter_output: ReporterOutput
+
+
+# ============================================================================
+# BETTING WORKFLOW SCHEMAS (NEW)
+# ============================================================================
+
+class BettingEvent(BaseModel):
+    """Betting event with markets from multiple providers"""
+    title: str = Field(..., description="Event title")
+    slug: str = Field(..., description="Event slug/ID")
+    markets: List[Dict[str, Any]] = Field(default_factory=list, description="Markets for this event")
+    providers: List[str] = Field(default_factory=list, description="Providers offering this event")
+    total_volume: float = Field(default=0.0, description="Total volume across all providers")
+    total_liquidity: float = Field(default=0.0, description="Total liquidity across all providers")
+
+
+class MarketDataByProvider(BaseModel):
+    """Market data grouped by provider"""
+    provider: str = Field(..., description="Provider name (polymarket, kalshi, etc)")
+    market_id: str = Field(..., description="Provider-specific market ID")
+    slug: str = Field(..., description="Market slug")
+    question: str = Field(..., description="Market question")
+    yes_price: Optional[float] = Field(None, ge=0.0, le=1.0, description="YES outcome price")
+    no_price: Optional[float] = Field(None, ge=0.0, le=1.0, description="NO outcome price")
+    mid_price: Optional[float] = Field(None, ge=0.0, le=1.0, description="Mid price")
+    volume: float = Field(default=0.0, description="24h volume")
+    liquidity: float = Field(default=0.0, description="Available liquidity")
+    spread: Optional[float] = Field(None, description="Bid-ask spread")
+    spread_bps: Optional[int] = Field(None, description="Spread in basis points")
+    orderbook: Optional[Dict[str, Any]] = Field(None, description="Orderbook data if available")
+
+
+class ResearchSummary(BaseModel):
+    """Condensed research findings for betting workflow"""
+    key_insights: List[str] = Field(default_factory=list, description="Main insights from research")
+    sentiment_signals: Dict[str, Any] = Field(default_factory=dict, description="Sentiment indicators")
+    insider_activity: Optional[Dict[str, Any]] = Field(None, description="Insider/whale activity detected")
+    information_edges: List[str] = Field(default_factory=list, description="Information advantages identified")
+    total_evidence_count: int = Field(default=0, description="Number of evidence items analyzed")
+    confidence: float = Field(default=0.5, ge=0.0, le=1.0, description="Research confidence level")
+
+
+class AdjustedProbability(BaseModel):
+    """Market price adjusted based on research"""
+    market_price: float = Field(..., ge=0.0, le=1.0, description="Current market price (prior)")
+    research_adjustment: float = Field(default=0.0, description="Adjustment from research (+/-)")
+    adjusted_probability: float = Field(..., ge=0.0, le=1.0, description="Final adjusted probability")
+    confidence_low: float = Field(..., ge=0.0, le=1.0, description="Lower bound (95% CI)")
+    confidence_high: float = Field(..., ge=0.0, le=1.0, description="Upper bound (95% CI)")
+    adjustment_reasoning: str = Field(..., description="Why this adjustment was made")
+    edge_vs_market: float = Field(..., description="adjusted_probability - market_price")
+
+
+class BettingRecommendation(BaseModel):
+    """Final betting recommendation from Professional Bettor agent"""
+    decision: Literal["BET", "PASS", "WAIT"] = Field(..., description="Recommendation")
+    action: Optional[str] = Field(None, description="Specific action (e.g., 'BET YES on Polymarket')")
+    confidence_score: float = Field(..., ge=0.0, le=1.0, description="Confidence in recommendation")
+
+    # Probabilities
+    p_bayesian: float = Field(..., ge=0.0, le=1.0, description="Adjusted probability estimate")
+    market_price: float = Field(..., ge=0.0, le=1.0, description="Current market price")
+    edge: float = Field(..., description="p_bayesian - market_price")
+    expected_value_pct: float = Field(..., description="Expected value as percentage")
+
+    # Position sizing
+    recommended_size: float = Field(..., ge=0.0, description="Recommended stake in dollars")
+    kelly_fraction: float = Field(..., ge=0.0, le=1.0, description="Kelly fraction used")
+    size_as_pct_bankroll: float = Field(..., ge=0.0, le=1.0, description="Size as % of bankroll")
+
+    # Market selection
+    selected_provider: Optional[str] = Field(None, description="Best provider to use")
+    selected_market_id: Optional[str] = Field(None, description="Specific market ID")
+    selected_threshold: Optional[int] = Field(None, description="Threshold level if applicable")
+
+    # Risk assessment
+    execution_risk: Literal["low", "medium", "high"] = Field(..., description="Execution risk")
+    portfolio_risk: Literal["low", "medium", "high"] = Field(..., description="Portfolio impact")
+    overall_risk_score: float = Field(..., ge=0.0, le=1.0, description="Overall risk (0=safe, 1=risky)")
+
+    # Analysis
+    market_quality_score: float = Field(..., ge=0.0, le=1.0, description="Liquidity/spread quality")
+    liquidity_usd: float = Field(default=0.0, description="Available liquidity")
+    spread_bps: int = Field(default=0, description="Spread in basis points")
+
+    # Rationale
+    rationale: str = Field(..., description="Detailed reasoning for recommendation")
+    key_risks: List[str] = Field(default_factory=list, description="Main risks to consider")
+    alternative_scenarios: List[str] = Field(default_factory=list, description="Other outcomes considered")
+    research_sources: List[str] = Field(default_factory=list, description="Sources supporting decision")
+
+
+class BettingReporterOutput(BaseModel):
+    """Reporter output for betting workflow"""
+    market_question: str
+    decision: Literal["BET", "PASS", "WAIT"]
+    recommended_position: Optional[Dict[str, Any]] = Field(None, description="Position details if BET")
+
+    # Summary
+    tldr: str = Field(..., max_length=300, description="1-2 sentence summary")
+    executive_summary: str = Field(..., min_length=200, max_length=800, description="Full summary")
+
+    # Supporting data
+    research_highlights: List[str] = Field(default_factory=list, description="Key research findings")
+    arbitrage_opportunities: List[Dict[str, Any]] = Field(default_factory=list, description="Arb opportunities")
+    threshold_analysis: Optional[Dict[str, Any]] = Field(None, description="Threshold market analysis")
+
+    # Provenance
+    all_sources: List[str] = Field(default_factory=list, description="All research sources")
+    agent_traces: List[Dict[str, Any]] = Field(default_factory=list, description="Agent execution log")
+
+    disclaimer: str = Field(default="NOT FINANCIAL ADVICE. DO YOUR OWN RESEARCH.")
+
+
+class BettingWorkflowState(TypedDict, total=False):
+    """State for betting-focused workflow (market price as prior)"""
+    # Input (required)
+    market_question: str
+    market_url: str
+    market_slug: str
+    providers: List[str]
+    bankroll: float
+    max_kelly: float
+    min_edge_threshold: float
+
+    # Workflow metadata
+    workflow_id: str
+    timestamp: str
+    context: Dict[str, Any]
+    messages: Annotated[List[AnyMessage], add_messages]
+    agent_traces: Annotated[List[Dict[str, Any]], append_traces]
+
+    # Event Fetcher outputs
+    events: List[BettingEvent]
+    target_markets: List[Dict[str, Any]]
+
+    # Market Analyzer outputs
+    market_data_by_provider: Dict[str, MarketDataByProvider]
+    related_threshold_markets: List[Dict[str, Any]]
+    best_prices: Dict[str, Any]
+
+    # Researcher outputs
+    research_summary: ResearchSummary
+
+    # Market Pricer outputs
+    adjusted_probability: AdjustedProbability
+
+    # Professional Bettor outputs
+    betting_recommendation: BettingRecommendation
+
+    # Reporter outputs
+    reporter_output: BettingReporterOutput
