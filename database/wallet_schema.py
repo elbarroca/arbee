@@ -255,7 +255,87 @@ class WalletScore:
     raw_data: Optional[Dict[str, Any]] = None
 
 
+@dataclass
+class EventClosed:
+    """Closed/resolved event with historical context."""
+
+    id: str  # Primary key: Event ID from Polymarket
+    platform: str = "polymarket"
+
+    # Event metadata
+    title: Optional[str] = None
+    description: Optional[str] = None
+    category: Optional[str] = None  # From tags[0] or category field
+    tags: Optional[List[str]] = field(default_factory=list)  # Tag labels
+
+    # Status & timing
+    status: str = "closed"  # Always "closed" for this table
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+
+    # Aggregated metrics
+    market_count: int = 0  # Number of markets in this event
+    total_liquidity: float = 0.0  # Sum of liquidity across all markets
+    total_volume: float = 0.0  # Sum of volume across all markets
+
+    # Resolution details
+    resolution_source: Optional[str] = None  # How the event was resolved
+    resolution_date: Optional[str] = None  # When it was resolved
+
+    # Metadata
+    slug: Optional[str] = None  # URL-friendly identifier
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+    synced_at: Optional[str] = None  # When we fetched this data
+    raw_data: Optional[Dict[str, Any]] = None
+
+
+@dataclass
+class WalletOpenPosition:
+    """Current open position (from /positions endpoint)."""
+
+    id: str  # Primary key: proxy_wallet + condition_id + outcome_index
+    proxy_wallet: str  # Foreign key to wallets
+    event_id: Optional[str] = None  # Foreign key to events
+    condition_id: str = None  # Market condition ID
+    asset: str = None  # ERC-1155 token ID
+
+    # Position details
+    outcome: Optional[str] = None
+    outcome_index: Optional[int] = None
+    size: float = 0.0  # Current token balance
+    avg_price: float = 0.0  # Average purchase price
+    cur_price: float = 0.0  # Current market price
+
+    # Current P&L (unrealized)
+    initial_value: float = 0.0  # size * avg_price
+    current_value: float = 0.0  # size * cur_price
+    cash_pnl: float = 0.0  # current_value - initial_value
+    percent_pnl: float = 0.0  # cash_pnl / initial_value
+
+    # Realized P&L (from partial closes)
+    realized_pnl: float = 0.0
+    percent_realized_pnl: float = 0.0
+
+    # Flags
+    redeemable: bool = False  # Can be redeemed
+    mergeable: bool = False  # Can be merged
+    negative_risk: bool = False  # Negative risk position
+
+    # Market metadata
+    title: Optional[str] = None
+    slug: Optional[str] = None
+    event_slug: Optional[str] = None
+    end_date: Optional[str] = None
+
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+    raw_data: Optional[Dict[str, Any]] = None
+
+
 # Type aliases for convenience
 WalletList = List[Wallet]
 TradeList = List[Trade]
 PositionList = List[WalletClosedPosition]
+OpenPositionList = List[WalletOpenPosition]
+ClosedEventList = List[EventClosed]

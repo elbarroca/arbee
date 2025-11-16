@@ -517,6 +517,58 @@ class PolymarketGamma:
             raise MarketNotFoundError(f"Event not found for slug={slug}")
         return event
 
+    async def get_market_by_condition_id(self, condition_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Retrieve a single market by its conditionId.
+
+        Note: Due to Polymarket API inconsistency, querying by conditionId may not
+        return resolved outcomePrices. This method tries multiple query strategies
+        to get the most accurate data.
+
+        Args:
+            condition_id: The market condition ID (hex string like 0x...)
+
+        Returns:
+            Normalized market dict if found, None otherwise.
+        """
+        assert condition_id
+
+        # Strategy 1: Query with conditionId filter
+        params = {"conditionId": condition_id, "limit": 1}
+        data = await self._get("/markets", params)
+
+        if isinstance(data, list) and len(data) > 0:
+            market = self._normalize_market(data[0])
+
+            # Check if we need resolution data but got ["0", "0"]
+            if market.get("closed"):
+                prices = market.get("outcomePrices", [])
+                # If prices are all zeros, try fetching with closed=true filter for better data
+                if prices and all(str(p) == "0" for p in prices):
+                    # Strategy 2: Query closed markets and find our specific one
+                    # This is slower but returns accurate resolution data
+                    try:
+                        closed_params = {
+                            "closed": "true",
+                            "conditionId": condition_id,
+                            "limit": 1,
+                            "order": "updatedAt",
+                            "ascending": "false"
+                        }
+                        closed_data = await self._get("/markets", closed_params)
+                        if isinstance(closed_data, list) and len(closed_data) > 0:
+                            closed_market = self._normalize_market(closed_data[0])
+                            # Merge resolution data if better
+                            closed_prices = closed_market.get("outcomePrices", [])
+                            if closed_prices and not all(str(p) == "0" for p in closed_prices):
+                                market["outcomePrices"] = closed_prices
+                    except Exception:
+                        pass  # Use original data if fallback fails
+
+            return market
+
+        return None
+
     async def _get(self, path: str, params: Optional[Dict[str, Any]]) -> Any:
         """Low-level GET helper."""
         url = f"{self.base_url}{path}"
