@@ -29,13 +29,7 @@ class Wallet:
     pseudonym: Optional[str] = None
     bio: Optional[str] = None
     profile_image: Optional[str] = None
-    profile_image_optimized: Optional[str] = None
     display_username_public: Optional[bool] = None
-
-    # Quick stats (denormalized for performance)
-    total_trades: int = 0
-    total_markets: int = 0
-    total_volume: float = 0.0
 
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
