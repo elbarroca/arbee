@@ -1,186 +1,286 @@
-"""Open Positions Collector for Elite Traders."""
+"""
+Open Positions Collector (Production Scale).
+Enriches positions with Gamma Event Metadata.
+Strictly enforces Postgres types (No empty strings for dates).
+FILTERS: Ignores Tier 'D' traders (Only S, A, B, C).
+"""
 
 import asyncio
 import hashlib
 import logging
-from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, List
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
 
 from config.settings import Settings
 from database.client import MarketDatabase
-from clients.polymarket import PolymarketDataAPI
+from clients.polymarket import PolymarketDataAPI, PolymarketGamma
 
+# Configure Logging
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, 
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 class WalletOpenPositionsCollector:
     def __init__(self):
         self.settings = Settings()
         self.db = MarketDatabase(self.settings.SUPABASE_URL, self.settings.SUPABASE_KEY)
         self.api = PolymarketDataAPI()
-
-    async def run(self, max_wallets: int = 100, force_refresh: bool = False) -> Dict[str, Any]:
-        """Main execution pipeline."""
-        start = datetime.now(timezone.utc)
-
-        # 0. Cleanup expired positions
-        await self._cleanup_expired_positions()
-
-        # 1. Fetch Context (Wallets + Metadata + Exclusions)
-        targets, context = await self._get_processing_context(max_wallets, force_refresh)
-        if not targets:
-            return self._stats(0, 0, start)
-
-        logger.info(f"Processing {len(targets)} wallets")
+        self.gamma = PolymarketGamma()
         
-        # 2. Process in Batches
-        stats = {"found": 0, "stored": 0}
-        batch_size = 50
+        # Tuning
+        self.API_CONCURRENCY = 5
+        self.API_DELAY = 1.0
+        self.DB_PAGE_SIZE = 1000
+        self.DB_WRITE_BATCH = 200
         
-        for i in range(0, len(targets), batch_size):
-            batch = targets[i:i + batch_size]
+        self._event_cache: Dict[str, Dict] = {}
+
+    async def run(self, force_refresh: bool = False) -> Dict[str, Any]:
+        start_time = datetime.now(timezone.utc)
+        await self._cleanup_dead_positions()
+
+        stats = {"processed": 0, "saved": 0, "errors": 0}
+        offset = 0
+
+        logger.info("🚀 Starting Enriched Position Collection (Tiers S, A, B, C only)...")
+
+        while True:
+            traders_page = await self._fetch_trader_batch(limit=self.DB_PAGE_SIZE, offset=offset)
+            if not traders_page:
+                break 
+
+            logger.info(f"   📂 Processing DB Page: {offset} - {offset + len(traders_page)}")
             
-            # Fetch all API data concurrently
-            tasks = [self.api.get_positions(w, limit=500) for w in batch]
-            results = await asyncio.gather(*tasks, return_exceptions=True)
+            batch_stats = await self._process_trader_page(traders_page)
+            
+            stats["processed"] += len(traders_page)
+            stats["saved"] += batch_stats["saved"]
+            stats["errors"] += batch_stats["errors"]
+            
+            offset += self.DB_PAGE_SIZE
 
-            # Transform valid results
-            write_queue = []
-            for wallet, positions in zip(batch, results):
-                if isinstance(positions, list) and positions:
-                    meta = context.get(wallet, {})
-                    write_queue.extend(
-                        self._transform(p, wallet, meta) for p in positions if self._is_valid(p)
-                    )
+        duration = (datetime.now(timezone.utc) - start_time).total_seconds()
+        stats["duration"] = duration
+        stats["rate_per_sec"] = round(stats["processed"] / duration, 2) if duration > 0 else 0
+        
+        logger.info(f"✅ Collection Complete: {stats}")
+        return stats
 
-            # Bulk Write
-            if write_queue:
-                self.db.supabase.table("elite_open_positions").upsert(write_queue).execute()
-                stats["found"] += len(write_queue)
-                stats["stored"] += len(write_queue)
-                logger.info(f"Batch {i//batch_size + 1}: Upserted {len(write_queue)} positions")
+    async def _process_trader_page(self, traders: List[Dict]) -> Dict[str, int]:
+        all_raw_positions = []
+        errors = 0
 
-        return self._stats(len(targets), stats["stored"], start)
+        chunk_size = self.API_CONCURRENCY
+        for i in range(0, len(traders), chunk_size):
+            batch = traders[i : i + chunk_size]
+            tasks = [self._worker_fetch_positions(t) for t in batch]
+            results = await asyncio.gather(*tasks)
+            
+            for res in results:
+                if res is not None:
+                    all_valid = [p for p in res if self._is_valid_pre_check(p)]
+                    for p in all_valid:
+                        owner = next((t for t in batch if t['proxy_wallet'] == p.get('proxyWallet')), {})
+                        p['_trader_meta'] = owner
+                    all_raw_positions.extend(all_valid)
+                else:
+                    errors += 1
+            
+            await asyncio.sleep(self.API_DELAY)
 
-    async def _get_processing_context(self, limit: int, force: bool) -> tuple[List[str], Dict[str, Any]]:
-        """Aggressively fetches targets and metadata - no mercy, no fallbacks."""
-        # Execute queries assertively
-        traders_res = (self.db.supabase.table("elite_traders")
-                      .select("*")
-                      .order("composite_score", desc=True)
-                      .limit(limit)
-                      .execute())
+        # Enrich
+        unique_slugs = set()
+        for p in all_raw_positions:
+            slug = p.get('eventSlug')
+            if slug and slug not in self._event_cache:
+                unique_slugs.add(slug)
+        
+        if unique_slugs:
+            logger.info(f"   🌍 Enriching {len(unique_slugs)} new events...")
+            await self._fetch_event_metadata(list(unique_slugs))
 
-        recent_res = None if force else (self.db.supabase.table("elite_open_positions")
-                                        .select("proxy_wallet")
-                                        .gte("updated_at", (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat())
-                                        .execute())
+        # Transform & Write
+        final_write_queue = []
+        for p in all_raw_positions:
+            if self._is_valid_post_check(p):
+                final_write_queue.append(self._transform(p))
 
-        # Build elite trader context - check data exists
-        traders = traders_res.data
-        if not traders:
-            logger.warning("No elite traders found - database empty or query failed")
-            return [], {}
+        saved_count = await self._bulk_write_to_db(final_write_queue)
+        
+        return {"saved": saved_count, "errors": errors}
 
-        context_map = {
-            t["proxy_wallet"]: {
-                "wallet_rank": t.get("rank_in_tier"),
-                "composite_score": t.get("composite_score"),
-                "roi": t.get("roi"),
-                "win_rate": t.get("win_rate"),
-                "total_volume": t.get("total_volume"),
-                "n_positions": t.get("n_positions"),
-                "n_markets": t.get("n_markets"),
-                "trader_tier": t.get("tier")
-            } for t in traders
-        }
+    async def _fetch_event_metadata(self, slugs: List[str]):
+        semaphore = asyncio.Semaphore(10) 
+        
+        async def fetch_one(slug):
+            async with semaphore:
+                try:
+                    event = await self.gamma.get_event(slug)
+                    if event:
+                        cat = event.get('category')
+                        if not cat:
+                             tags = event.get('tags', [])
+                             if tags and isinstance(tags[0], dict):
+                                 cat = tags[0].get('label')
+                             elif tags:
+                                 cat = str(tags[0])
 
-        # Filter targets aggressively
-        targets = list(context_map.keys())
-        if not force and recent_res and recent_res.data:
-            recent_wallets = {r["proxy_wallet"] for r in recent_res.data}
-            targets = [t for t in targets if t not in recent_wallets]
+                        self._event_cache[slug] = {
+                            "endDate": event.get("endDate"),
+                            "category": cat,
+                            "id": event.get("id")
+                        }
+                except Exception:
+                    pass
 
-        return targets, context_map
+        tasks = [fetch_one(s) for s in slugs]
+        await asyncio.gather(*tasks)
 
-    async def _cleanup_expired_positions(self) -> None:
-        """Remove positions for events that have already ended."""
-        today = datetime.now(timezone.utc).date().isoformat()
-        result = (self.db.supabase.table("elite_open_positions")
-                 .delete()
-                 .lt("event_end_date", today)
-                 .execute())
+    async def _worker_fetch_positions(self, trader: Dict) -> Optional[List[Dict]]:
+        wallet = trader['proxy_wallet']
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                res = await self.api.get_positions(wallet, limit=500)
+                return res if res else []
+            except Exception as e:
+                if "429" in str(e):
+                    if attempt < 2:
+                        await asyncio.sleep(2 * (attempt + 1))
+                        continue
+                return None
+        return None
 
-        deleted_count = len(result.data) if result.data else 0
-        if deleted_count > 0:
-            logger.info(f"🧹 Cleaned up {deleted_count} expired positions")
-        else:
-            logger.debug("No expired positions found to clean up")
+    # --- VALIDATION ---
 
-    def _is_valid(self, p: Dict) -> bool:
-        """Fast validation check - only include positions for future events."""
-        # Check required fields exist
-        if not p.get("conditionId") or p.get("outcomeIndex") is None:
-            logger.debug(f"Position missing critical fields: {p.get('conditionId')}")
-            return False
+    def _is_valid_pre_check(self, p: Dict) -> bool:
+        if not p.get("conditionId"): return False
+        if p.get("redeemable") is True: return False
+        cur_price = float(p.get("curPrice") or 0)
+        if cur_price <= 0.02 or cur_price >= 0.98: return False
+        return True
 
-        # Check event is still active (end date is today or future)
-        end_date_str = p.get("endDate")
-        if not end_date_str:
-            logger.debug(f"Position missing end date: {p.get('conditionId')}")
-            return False
+    def _is_valid_post_check(self, p: Dict) -> bool:
+        slug = p.get("eventSlug")
+        meta = self._event_cache.get(slug, {})
+        
+        # Date Check
+        end_date = self._parse_iso_date(meta.get("endDate") or p.get("endDate"))
+        
+        if end_date:
+            if end_date < datetime.now(timezone.utc):
+                return False # Expired
+        
+        return True
 
-        end_date = datetime.fromisoformat(end_date_str).date()
-        today = datetime.now(timezone.utc).date()
-        return end_date >= today
+    def _transform(self, p: Dict) -> Dict:
+        wallet = p['_trader_meta']['proxy_wallet']
+        meta = p['_trader_meta']
+        
+        slug = p.get("eventSlug")
+        event_meta = self._event_cache.get(slug, {})
+        
+        # Date Parsing
+        raw_date = event_meta.get("endDate") or p.get("endDate")
+        final_end_date = None
+        if raw_date:
+             parsed = self._parse_iso_date(raw_date)
+             if parsed:
+                 final_end_date = parsed.isoformat()
 
-    def _transform(self, p: Dict, wallet: str, meta: Dict) -> Dict:
-        """Pure data transformation - assertive and direct."""
-        # Extract values assertively
-        size = float(p["size"])
-        cur_price = float(p["curPrice"])
-        entry_price = float(p["avgPrice"])
+        final_event_id = event_meta.get("id") or p.get("eventId")
+        category = event_meta.get("category")
 
-        # Generate ID
+        size = float(p.get("size", 0))
+        cur_price = float(p.get("curPrice", 0))
+        entry_price = float(p.get("avgPrice", 0))
+        
         pid = hashlib.sha256(f"{wallet}{p['conditionId']}{p['outcomeIndex']}".encode()).hexdigest()[:32]
         now = datetime.now(timezone.utc).isoformat()
 
-        # Core position data - no fallbacks, no mercy
         return {
             "id": pid,
             "proxy_wallet": wallet,
-            "event_id": p.get("eventId"),
+            "event_id": final_event_id,
             "condition_id": p["conditionId"],
             "asset": p.get("asset"),
-            "outcome": p["outcome"],
-            "outcome_index": p["outcomeIndex"],
+            "outcome": p.get("outcome"),
+            "outcome_index": int(p.get("outcomeIndex", 0)),
+            
             "size": size,
             "avg_entry_price": entry_price,
             "current_price": cur_price,
             "unrealized_pnl": size * (cur_price - entry_price),
             "position_value": size * cur_price,
-            "cash_pnl": float(p["cashPnl"]),
-            "initial_value": float(p["initialValue"]),
-            "title": p["market"]["title"] if p.get("market") else p["title"],
-            "slug": p["market"]["slug"] if p.get("market") else p["slug"],
-            "event_slug": p["event"]["slug"] if p.get("event") else p["eventSlug"],
-            "event_end_date": p["endDate"],
-            "redeemable": bool(p["redeemable"]),
-            "mergeable": bool(p["mergeable"]),
-            "negative_risk": bool(p["negativeRisk"]),
+            "cash_pnl": float(p.get("cashPnl", 0)),
+            "initial_value": float(p.get("initialValue", 0)),
+            
+            "title": p.get("title"),
+            "slug": p.get("slug"),
+            "event_slug": slug,
+            
+            "event_end_date": final_end_date,
+            "event_category": category,
+            
+            "redeemable": bool(p.get("redeemable")),
+            "mergeable": bool(p.get("mergeable")),
+            "negative_risk": bool(p.get("negativeRisk")),
             "raw_data": p,
+            
+            "wallet_rank": meta.get("rank_in_tier"),
+            "composite_score": meta.get("composite_score"),
+            "trader_tier": meta.get("tier"),
+            "win_rate": meta.get("win_rate"),
+            "roi": meta.get("roi"),
+            
             "created_at": now,
             "updated_at": now
-        } | meta
-
-    def _stats(self, count: int, stored: int, start: datetime) -> Dict:
-        duration = (datetime.now(timezone.utc) - start).total_seconds()
-        return {
-            "wallets_processed": count,
-            "positions_stored": stored,
-            "duration": duration,
-            "rate": stored / duration if duration > 0 else 0
         }
 
-# Direct Entry Point
-async def collect_elite_trader_open_positions(max_wallets: int = 100, force_refresh: bool = False):
-    return await WalletOpenPositionsCollector().run(max_wallets, force_refresh)
+    def _parse_iso_date(self, date_str: str) -> Optional[datetime]:
+        if not date_str: return None
+        try:
+            clean_str = date_str.replace("Z", "+00:00")
+            if "T" not in clean_str and "+" not in clean_str:
+                 return datetime.fromisoformat(clean_str).replace(tzinfo=timezone.utc)
+            return datetime.fromisoformat(clean_str)
+        except:
+            return None
+
+    async def _bulk_write_to_db(self, positions: List[Dict]) -> int:
+        if not positions: return 0
+        total_saved = 0
+        
+        # Cleanup nesting before write
+        for p in positions:
+             if '_trader_meta' in p: del p['_trader_meta']
+             if '_trader_meta' in p['raw_data']: del p['raw_data']['_trader_meta']
+
+        for i in range(0, len(positions), self.DB_WRITE_BATCH):
+            chunk = positions[i : i + self.DB_WRITE_BATCH]
+            try:
+                self.db.supabase.table("elite_open_positions").upsert(chunk).execute()
+                total_saved += len(chunk)
+            except Exception as e:
+                logger.error(f"❌ DB Write Error: {e}")
+        return total_saved
+
+    async def _fetch_trader_batch(self, limit: int, offset: int) -> List[Dict]:
+        # UPDATED: Added .neq("tier", "D") to filter out D traders
+        res = (self.db.supabase.table("elite_traders")
+               .select("*")
+               .neq("tier", "D")
+               .order("composite_score", desc=True)
+               .range(offset, offset + limit - 1).execute())
+        return res.data or []
+
+    async def _cleanup_dead_positions(self) -> None:
+        today = datetime.now(timezone.utc).date().isoformat()
+        self.db.supabase.table("elite_open_positions").delete().lt("event_end_date", today).execute()
+        self.db.supabase.table("elite_open_positions").delete().or_("current_price.gte.0.98,current_price.lte.0.02").execute()
+        self.db.supabase.table("elite_open_positions").delete().eq("redeemable", True).execute()
+
+if __name__ == "__main__":
+    asyncio.run(WalletOpenPositionsCollector().run())
