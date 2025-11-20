@@ -52,10 +52,10 @@ export default function LiveAlphaSection() {
         </div>
 
         {/* Main Container */}
-        <div className="bg-[#080808] border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
-            
+        <div className="bg-[#080808] border border-white/10 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
+
             {/* CHART AREA */}
-            <div className="h-[400px] relative w-full border-b border-white/5 bg-[#060606]">
+            <div className="h-[300px] md:h-[400px] relative w-full border-b border-white/5 bg-[#060606]">
                 {/* Grid Lines (Stock Chart Style) */}
                 <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20 p-8">
                     <div className="w-full h-px bg-zinc-800"></div>
@@ -114,8 +114,8 @@ export default function LiveAlphaSection() {
                 </motion.div>
             </div>
 
-            {/* DATA TABLE */}
-            <div className="w-full overflow-x-auto">
+            {/* DATA TABLE - Desktop */}
+            <div className="hidden md:block w-full overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[800px]">
                     <thead>
                         <tr className="bg-white/[0.02] text-[11px] text-zinc-500 uppercase tracking-wider border-b border-white/5 font-semibold">
@@ -142,8 +142,8 @@ export default function LiveAlphaSection() {
                                 <td className="p-5 text-zinc-300">{pos.market}</td>
                                 <td className="p-5">
                                     <span className={`px-2 py-1 rounded text-[10px] font-bold border ${
-                                        pos.outcome === 'Yes' || pos.outcome === 'Trump' 
-                                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                                        pos.outcome === 'Yes' || pos.outcome === 'Trump'
+                                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                                         : 'bg-red-500/10 text-red-400 border-red-500/20'
                                     }`}>
                                         {pos.outcome}
@@ -168,9 +168,62 @@ export default function LiveAlphaSection() {
                 </table>
             </div>
 
-            <div className="p-4 bg-zinc-900/30 border-t border-white/5 text-center">
+            {/* MOBILE CARDS */}
+            <div className="md:hidden divide-y divide-white/5">
+                {positions.map((pos, i) => (
+                    <div key={i} className="p-4 hover:bg-white/[0.02] transition-colors">
+                        <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-400 border border-white/5 flex-shrink-0">
+                                    <pos.icon className="w-5 h-5" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <h3 className="font-medium text-white text-sm truncate">{pos.event}</h3>
+                                    <p className="text-zinc-500 text-xs font-mono">{pos.date}</p>
+                                </div>
+                            </div>
+                            <div className={`inline-flex items-center gap-1.5 text-[10px] uppercase font-bold px-2 py-1 rounded-full ${
+                                pos.status === 'Live' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-zinc-600/10 text-zinc-500'
+                            }`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${pos.status === 'Live' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-600'}`} />
+                                {pos.status}
+                            </div>
+                        </div>
+
+                        <div className="mb-3">
+                            <p className="text-zinc-300 text-sm mb-2">{pos.market}</p>
+                            <span className={`px-2 py-1 rounded text-xs font-bold border ${
+                                pos.outcome === 'Yes' || pos.outcome === 'Trump'
+                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                : 'bg-red-500/10 text-red-400 border-red-500/20'
+                            }`}>
+                                {pos.outcome}
+                            </span>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-4">
+                            <div className="text-center">
+                                <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Entry</p>
+                                <p className="text-sm font-mono text-zinc-400">{pos.entry}</p>
+                            </div>
+                            <div className="text-center">
+                                <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Current</p>
+                                <p className="text-sm font-mono text-white">{pos.current}</p>
+                            </div>
+                            <div className="text-center">
+                                <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">ROI</p>
+                                <p className={`text-sm font-mono font-bold ${pos.roi.startsWith('+') ? 'text-emerald-400' : 'text-red-400'}`}>
+                                    {pos.roi}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="p-3 md:p-4 bg-zinc-900/30 border-t border-white/5 text-center">
                 <button className="text-xs text-zinc-500 hover:text-white transition-colors flex items-center justify-center gap-2 mx-auto group">
-                    View Full Ledger 
+                    View Full Ledger
                     <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </button>
             </div>

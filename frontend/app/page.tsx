@@ -63,265 +63,152 @@ export default function LandingPage() {
 
       {/* --- IDENTIFY THE EDGE (BENTO GRID) --- */}
       <section className="py-24 px-6 max-w-7xl mx-auto relative">
-
         <div className="mb-16">
-
            <h2 className="text-3xl md:text-5xl font-bold mb-6">Identify the edge.</h2>
-
            <p className="text-zinc-400 max-w-xl text-lg">
-
              Our engine scans thousands of markets and wallets every second.
-
            </p>
-
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[320px]">
-
-
-
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 auto-rows-[280px] md:auto-rows-[320px]">
           {/* 1. LIQUIDITY HUNT (SQUARE) */}
 
-          <div className="md:col-span-1 rounded-3xl border border-white/10 bg-zinc-900/20 p-8 group hover:border-blue-500/30 transition-all duration-500 flex flex-col overflow-hidden relative">
-
+          <div className="md:col-span-1 rounded-2xl md:rounded-3xl border border-white/10 bg-zinc-900/20 p-6 md:p-8 group hover:border-blue-500/30 transition-all duration-500 flex flex-col overflow-hidden relative">
              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.1),transparent_50%)]"></div>
-
              <div className="z-10">
-
                 <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/20 mb-6">
-
                    <Waves className="w-6 h-6 text-blue-400" />
-
                 </div>
-
                 <h3 className="text-xl font-bold mb-2 text-white">Liquidity Hunt</h3>
-
                 <p className="text-zinc-400 text-sm">Find volume surges before the crowd enters.</p>
-
              </div>
-
              {/* Visual: Animated Bars */}
 
              <div className="mt-auto flex items-end gap-1 h-16 opacity-50">
-
                 {[20, 40, 60, 80, 50, 90, 30, 70, 40, 100].map((h, i) => (
-
                     <motion.div
-
                         key={i}
-
                         animate={{ height: [`${h}%`, `${Math.max(20, h - 20)}%`, `${h}%`] }}
-
                         transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
-
                         className="flex-1 bg-blue-500 rounded-t-sm"
-
                     />
-
                 ))}
-
              </div>
-
           </div>
 
           {/* 2. WHALE REPLICATION (RECTANGLE) */}
 
-          <div className="md:col-span-2 rounded-3xl border border-white/10 bg-zinc-900/20 p-8 group hover:border-cyan-500/30 transition-all duration-500 flex flex-col md:flex-row items-center gap-8 overflow-hidden relative">
-
+          <div className="md:col-span-2 rounded-2xl md:rounded-3xl border border-white/10 bg-zinc-900/20 p-6 md:p-8 group hover:border-cyan-500/30 transition-all duration-500 flex flex-col md:flex-row items-center gap-6 md:gap-8 overflow-hidden relative">
              <div className="flex-1 z-10 relative">
-
                 <div className="w-12 h-12 bg-cyan-500/10 rounded-xl flex items-center justify-center mb-6 border border-cyan-500/20">
-
                     <Target className="w-6 h-6 text-cyan-400" />
-
                 </div>
-
                 <h3 className="text-xl font-bold mb-2 text-white">Whale Replication</h3>
-
                 <p className="text-zinc-400 text-sm max-w-sm">
-
                     Copy the top 1% of profitable wallets. Our system filters out luck to find pure skill.
-
                 </p>
-
              </div>
-
              {/* Visual: Sync Graphic */}
 
-             <div className="w-full md:w-1/2 h-full bg-[#050505] rounded-xl border border-white/5 flex items-center justify-center relative overflow-hidden p-6">
-
-                 <div className="flex items-center gap-4">
-
-                    <div className="w-16 h-16 rounded-full border-2 border-cyan-500/30 flex items-center justify-center relative">
-
-                        <User className="w-8 h-8 text-cyan-500" />
-
-                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_10px_#22d3ee]"></div>
-
+             <div className="w-full md:w-1/2 h-full bg-[#050505] rounded-xl border border-white/5 flex items-center justify-center relative overflow-hidden p-4 md:p-6">
+                 <div className="flex items-center gap-3 md:gap-4 w-full max-w-xs md:max-w-none">
+                    <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-cyan-500/30 flex items-center justify-center relative flex-shrink-0">
+                        <User className="w-6 h-6 md:w-8 md:h-8 text-cyan-500" />
+                        <div className="absolute -top-1 -right-1 w-2 h-2 md:w-3 md:h-3 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_8px_#22d3ee] md:shadow-[0_0_10px_#22d3ee]"></div>
                     </div>
-
-                    <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/50 to-zinc-700 border-t border-dashed border-white/20 relative">
-
+                    <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/50 to-zinc-700 border-t border-dashed border-white/20 relative min-w-0">
                         <motion.div
-
                            animate={{ x: [-20, 100], opacity: [0, 1, 0] }}
-
                            transition={{ duration: 1.5, repeat: Infinity }}
-
-                           className="absolute top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_white]"
-
+                           className="absolute top-1/2 -translate-y-1/2 w-1.5 h-1.5 md:w-2 md:h-2 bg-white rounded-full shadow-[0_0_8px_white]"
                         />
-
                     </div>
-
-                    <div className="w-12 h-12 rounded-full border border-zinc-700 flex items-center justify-center bg-zinc-900">
-
-                        <User className="w-5 h-5 text-zinc-500" />
-
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-zinc-700 flex items-center justify-center bg-zinc-900 flex-shrink-0">
+                        <User className="w-4 h-4 md:w-5 md:h-5 text-zinc-500" />
                     </div>
-
                  </div>
-
              </div>
-
           </div>
 
           {/* 3. RISK CALCULATOR (Fixed Animation) */}
 
-          <div className="md:col-span-2 rounded-3xl border border-white/10 bg-zinc-900/20 p-8 group hover:border-purple-500/30 transition-all duration-500 flex flex-col md:flex-row-reverse items-center gap-8 overflow-hidden">
-
+          <div className="md:col-span-2 rounded-2xl md:rounded-3xl border border-white/10 bg-zinc-900/20 p-6 md:p-8 group hover:border-purple-500/30 transition-all duration-500 flex flex-col md:flex-row-reverse items-center gap-6 md:gap-8 overflow-hidden">
              <div className="flex-1 text-right md:text-left z-10">
-
                 <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center mb-6 border border-purple-500/20 ml-auto md:ml-0">
-
                     <Activity className="w-6 h-6 text-purple-400" />
-
                 </div>
-
                 <h3 className="text-xl font-bold mb-2 text-white">Risk Calculator</h3>
-
                 <p className="text-zinc-400 text-sm max-w-sm ml-auto md:ml-0">
-
                     Real-time odds vs. implied probability scoring.
-
                 </p>
-
              </div>
-
              {/* Visual: Bell Curve Scan */}
 
              <div className="w-full md:w-1/2 h-40 bg-[#050505] rounded-xl border border-white/5 relative overflow-hidden flex items-center justify-center">
-
                  <div className="absolute inset-0 flex items-center justify-center opacity-20">
-
                     {/* Static Bell Curve Path */}
-
-                    <svg viewBox="0 0 200 100" className="w-full h-full">
-
-                         <path d="M0,100 C50,100 80,20 100,20 S150,100 200,100" fill="none" stroke="#a855f7" strokeWidth="2" />
-
+                    <svg viewBox="0 0 200 120" className="w-full h-full">
+                         <path d="M0,120 C50,120 75,15 100,15 S150,120 200,120" fill="none" stroke="#a855f7" strokeWidth="2.5" />
                     </svg>
-
                  </div>
-
                  {/* Scanning Line */}
-
                  <motion.div
-
                     animate={{ left: ['0%', '100%'] }}
-
                     transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-
                     className="absolute top-0 bottom-0 w-px bg-purple-500 shadow-[0_0_10px_#a855f7]"
-
                  />
-
                  <div className="bg-zinc-900 border border-zinc-700 px-3 py-1 rounded text-xs text-purple-300 z-10">
-
-                    EV: +4.2%
-
+                    EV: +5.3%
                  </div>
-
              </div>
-
           </div>
 
           {/* 4. LIVE SIGNALS (Fixed Layout) */}
-
-          <div className="md:col-span-1 rounded-3xl border border-white/10 bg-zinc-900/20 p-8 group hover:border-emerald-500/30 transition-all duration-500 flex flex-col overflow-hidden relative">
-
+          <div className="md:col-span-1 rounded-2xl md:rounded-3xl border border-white/10 bg-zinc-900/20 p-6 md:p-8 group hover:border-emerald-500/30 transition-all duration-500 flex flex-col overflow-hidden relative">
              <div className="z-20 bg-[#0c0c0c]/80 backdrop-blur-sm pb-4">
-
                 <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center border border-emerald-500/20 mb-6">
-
                    <BarChart3 className="w-6 h-6 text-emerald-400" />
-
                 </div>
-
                 <h3 className="text-xl font-bold mb-2 text-white">Live Signals</h3>
-
              </div>
-
-
 
              {/* Visual: Ticker with Mask */}
-
              <div className="absolute inset-x-0 bottom-0 top-32 px-8 overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]">
-
                  <motion.div
-
                     animate={{ y: [-100, 0] }}
-
                     transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-
                     className="space-y-3"
-
                  >
-
                      {[...Array(2)].map((_, setIndex) => (
-
                         <div key={setIndex} className="space-y-3">
-
                             {["Buy YES: Fed", "Sell NO: BTC", "Buy YES: SpaceX", "Buy YES: Election"].map((txt, i) => (
-
                                 <div key={i} className="bg-[#050505] border border-white/10 p-3 rounded-lg text-[10px] font-mono flex justify-between items-center">
-
                                     <span className={txt.includes('Buy') ? 'text-emerald-400' : 'text-red-400'}>{txt}</span>
-
                                     <span className="text-zinc-600">Just now</span>
-
                                 </div>
-
                             ))}
-
                         </div>
-
                      ))}
-
                  </motion.div>
-
              </div>
-
           </div>
-
         </div>
-
       </section>
 
       {/* --- LIVE ALPHA --- */}
       <LiveAlphaSection />
 
       {/* --- CTA --- */}
-      <section className="py-32 px-6">
-         <div className="max-w-5xl mx-auto relative bg-[#0a0a0a] border border-white/10 p-12 md:p-20 rounded-[2rem] text-center overflow-hidden">
+      <section className="py-24 md:py-32 px-4 md:px-6">
+         <div className="max-w-5xl mx-auto relative bg-[#0a0a0a] border border-white/10 p-8 md:p-12 lg:p-20 rounded-2xl md:rounded-[2rem] text-center overflow-hidden">
              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-cyan-500 to-emerald-500"></div>
-             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Stop trading blind.</h2>
-             <p className="text-zinc-400 mb-10 max-w-lg mx-auto text-lg">
+             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-white">Stop trading blind.</h2>
+             <p className="text-zinc-400 mb-8 md:mb-10 max-w-lg mx-auto text-base md:text-lg">
                  The market moves fast. Our AI moves faster.
              </p>
              <Link href="/dashboard">
-                 <Button size="lg" className="h-16 px-12 text-xl rounded-full shadow-[0_0_50px_-10px_rgba(255,255,255,0.2)]">
-                   Launch Terminal <ArrowRight className="ml-3 w-6 h-6" />
+                 <Button size="lg" className="h-12 md:h-14 lg:h-16 px-8 md:px-10 lg:px-12 text-base md:text-lg lg:text-xl rounded-full shadow-[0_0_50px_-10px_rgba(255,255,255,0.2)]">
+                   Launch Terminal <ArrowRight className="ml-2 md:ml-3 w-5 h-5 md:w-6 md:h-6" />
                  </Button>
              </Link>
          </div>

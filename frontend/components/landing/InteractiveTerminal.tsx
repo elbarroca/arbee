@@ -75,39 +75,39 @@ export default function InteractiveTerminal() {
   };
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto aspect-[16/10] bg-[#050505] rounded-xl border border-white/10 shadow-2xl shadow-blue-900/20 overflow-hidden flex flex-col font-sans select-none group cursor-default">
+    <div className="relative w-full max-w-4xl mx-auto aspect-[3/4] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[16/10] bg-[#050505] rounded-xl border border-white/10 shadow-2xl shadow-blue-900/20 overflow-hidden flex flex-col font-sans select-none group cursor-default">
       
       {/* Header */}
-      <div className="h-10 border-b border-white/5 bg-[#0a0a0a] flex items-center px-4 gap-3 z-20">
-        <div className="flex gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#2c2c2c] border border-white/10" />
-          <div className="w-2.5 h-2.5 rounded-full bg-[#2c2c2c] border border-white/10" />
-          <div className="w-2.5 h-2.5 rounded-full bg-[#2c2c2c] border border-white/10" />
+      <div className="h-10 border-b border-white/5 bg-[#0a0a0a] flex items-center px-3 md:px-4 gap-2 md:gap-3 z-20">
+        <div className="flex gap-1 md:gap-1.5">
+          <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-[#2c2c2c] border border-white/10" />
+          <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-[#2c2c2c] border border-white/10" />
+          <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-[#2c2c2c] border border-white/10" />
         </div>
-        <div className="flex-1 text-xs font-mono text-zinc-600 tracking-tight">
+        <div className="flex-1 text-[10px] md:text-xs font-mono text-zinc-600 tracking-tight truncate">
             poly-analytics-terminal — v2.4.0
         </div>
-        <div className="w-10 flex justify-end">
-             {step > 1 && <button onClick={() => setStep(step - 1)} className="text-zinc-500 hover:text-white transition-colors"><ChevronLeft className="w-4 h-4"/></button>}
+        <div className="w-8 md:w-10 flex justify-end">
+             {step > 1 && <button onClick={() => setStep(step - 1)} className="text-zinc-500 hover:text-white transition-colors p-1"><ChevronLeft className="w-3 h-3 md:w-4 md:h-4"/></button>}
         </div>
       </div>
 
       <div className="flex-1 relative overflow-hidden">
         
         {/* STEP 0: SEARCH */}
-        <motion.div 
-            className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 ${step === 0 ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none -z-10'}`}
+        <motion.div
+            className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 px-4 ${step === 0 ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none -z-10'}`}
         >
-             <div onClick={() => setStep(1)} className="relative group/input cursor-pointer w-full max-w-md mx-6">
-                <div className="absolute left-4 top-3.5 text-zinc-500 group-hover/input:text-emerald-400 transition-colors">
+             <div onClick={() => setStep(1)} className="relative group/input cursor-pointer w-full max-w-md mx-auto">
+                <div className="absolute left-3 md:left-4 top-3 md:top-3.5 text-zinc-500 group-hover/input:text-emerald-400 transition-colors">
                     <Search className="w-4 h-4" />
                 </div>
-                <input 
+                <input
                     readOnly
-                    className="w-full bg-[#0f0f0f] border border-white/10 rounded-xl py-3 pl-10 pr-4 text-zinc-300 shadow-2xl text-sm group-hover/input:border-white/20 transition-all"
-                    placeholder="Find whales, markets, or signals..." 
+                    className="w-full bg-[#0f0f0f] border border-white/10 rounded-xl py-3 pl-9 md:pl-10 pr-4 text-zinc-300 shadow-2xl text-sm group-hover/input:border-white/20 transition-all"
+                    placeholder="Find whales, markets, or signals..."
                 />
-                <div className="mt-4 flex justify-center gap-2">
+                <div className="mt-3 md:mt-4 flex flex-wrap justify-center gap-2">
                     {['High PnL', 'Active Now', 'Accumulating'].map(tag => (
                         <span key={tag} className="text-[10px] px-2 py-1 rounded border border-white/5 bg-white/5 text-zinc-600 group-hover/input:text-zinc-500 transition-colors">{tag}</span>
                     ))}
@@ -118,44 +118,44 @@ export default function InteractiveTerminal() {
         {/* STEP 1: COMPACT WALLET LIST (8 items) */}
         <AnimatePresence>
             {step === 1 && (
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, x: -20 }}
-                    className="absolute inset-0 top-0 p-4 bg-[#050505] overflow-y-auto scrollbar-hide"
+                    className="absolute inset-0 top-0 p-3 md:p-4 bg-[#050505] overflow-y-auto scrollbar-hide"
                 >
                     <div className="flex justify-between items-center mb-3 px-1">
                         <div className="text-zinc-400 text-xs font-medium">Elite Traders (Live)</div>
                     </div>
-                    
+
                     <div className="space-y-2">
                         {WALLETS.map((wallet, i) => (
-                            <motion.div 
+                            <motion.div
                                 key={wallet.id}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.03 }}
                                 onClick={() => handleWalletClick(wallet)}
-                                className="p-3 rounded-lg border border-white/5 bg-[#0a0a0a] hover:bg-[#121212] hover:border-white/10 cursor-pointer group transition-all flex items-center justify-between"
+                                className="p-3 rounded-lg border border-white/5 bg-[#0a0a0a] hover:bg-[#121212] hover:border-white/10 cursor-pointer group transition-all flex items-center justify-between active:scale-[0.98] touch-manipulation"
                             >
-                                <div className="flex items-center gap-3 flex-1">
-                                    <div className="text-xs font-mono text-zinc-300 group-hover:text-emerald-400 transition-colors">
-                                        {wallet.id}
+                                <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+                                    <div className="text-[10px] md:text-xs font-mono text-zinc-300 group-hover:text-emerald-400 transition-colors truncate flex-shrink-0">
+                                        {wallet.id.slice(0, 8)}...{wallet.id.slice(-4)}
                                     </div>
-                                    <div className="w-8 h-8 rounded bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-500 group-hover:text-emerald-400 group-hover:bg-zinc-800 transition-colors">
-                                        <User className="w-3 h-3" />
+                                    <div className="w-7 h-7 md:w-8 md:h-8 rounded bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-500 group-hover:text-emerald-400 group-hover:bg-zinc-800 transition-colors flex-shrink-0">
+                                        <User className="w-2.5 h-2.5 md:w-3 md:h-3" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2 text-[10px] text-zinc-600 flex-wrap">
+                                        <div className="flex items-center gap-1 md:gap-2 text-[9px] md:text-[10px] text-zinc-600 flex-wrap">
                                             <span>Win: {wallet.winRate}</span>
-                                            <span className="text-zinc-700">•</span>
-                                            <span>Vol: {wallet.vol}</span>
+                                            <span className="text-zinc-700 hidden sm:inline">•</span>
+                                            <span className="hidden sm:inline">Vol: {wallet.vol}</span>
                                             {wallet.tags && wallet.tags.length > 0 && (
                                                 <>
                                                     <span className="text-zinc-700">•</span>
                                                     <div className="flex gap-1 flex-wrap">
                                                         {wallet.tags.map((tag, idx) => (
-                                                            <span key={idx} className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                                            <span key={idx} className="px-1 py-0.5 md:px-1.5 rounded text-[8px] md:text-[9px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                                                                 {tag}
                                                             </span>
                                                         ))}
@@ -165,8 +165,8 @@ export default function InteractiveTerminal() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <div className="text-emerald-400 font-mono font-bold text-sm">{wallet.pnl}</div>
+                                <div className="text-right flex-shrink-0">
+                                    <div className="text-emerald-400 font-mono font-bold text-xs md:text-sm">{wallet.pnl}</div>
                                 </div>
                             </motion.div>
                         ))}
@@ -178,11 +178,11 @@ export default function InteractiveTerminal() {
         {/* STEP 2: POSITIONS GRID (Improved UI) */}
         <AnimatePresence>
             {step === 2 && selectedWallet && (
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -50 }}
-                    className="absolute inset-0 top-0 p-6 bg-[#050505] overflow-y-auto scrollbar-hide"
+                    className="absolute inset-0 top-0 p-4 md:p-6 bg-[#050505] overflow-y-auto scrollbar-hide"
                 >
                     {/* Header Section */}
                     <div className="mb-6 pb-4 border-b border-white/5">
@@ -282,16 +282,16 @@ export default function InteractiveTerminal() {
         {/* STEP 3: ALPHA DETECT (With Profit Calc) */}
         <AnimatePresence>
             {step === 3 && selectedPos && (
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="absolute inset-0 z-30 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+                    className="absolute inset-0 z-30 flex items-center justify-center p-3 md:p-4 bg-black/80 backdrop-blur-sm"
                 >
-                    <div className="bg-[#09090b] border border-white/10 w-full max-w-xs rounded-xl shadow-2xl relative overflow-hidden">
+                    <div className="bg-[#09090b] border border-white/10 w-full max-w-xs mx-4 rounded-xl shadow-2xl relative overflow-hidden">
                          <div className="h-1 w-full bg-gradient-to-r from-blue-500 to-emerald-500" />
-                         
-                         <div className="p-5">
+
+                         <div className="p-4 md:p-5">
                              <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-white font-bold text-sm">Alpha Detected</h3>
                                 <div className="bg-emerald-500/10 text-emerald-400 p-1.5 rounded">
