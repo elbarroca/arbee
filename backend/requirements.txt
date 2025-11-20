@@ -1,0 +1,96 @@
+# =============================================================================
+# POLYSEER Requirements
+# Comprehensive dependency list for flawless functionality
+# Generated from pyproject.toml with pinned versions
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Core Web Framework
+# -----------------------------------------------------------------------------
+fastapi==0.115.5              # Modern async web framework for APIs
+uvicorn[standard]==0.32.1     # ASGI server with websocket support
+pydantic==2.9.2               # Data validation using Python type hints
+pydantic-settings==2.11.0     # Settings management with environment variables
+
+# -----------------------------------------------------------------------------
+# LangChain Ecosystem - AI Agent Framework
+# -----------------------------------------------------------------------------
+langchain==0.3.12             # Core LangChain framework for agent orchestration
+langchain-core==0.3.63        # Core abstractions and base classes (compatible with valyu)
+langchain-community==0.3.12   # Community integrations (required for some tools)
+langchain-openai==0.2.5       # OpenAI integration (optional backup)
+langgraph==0.2.45             # Graph-based agent workflow orchestration
+langchain-valyu>=0.1.0        # Valyu deep research integration for comprehensive web search
+langgraph-checkpoint-postgres # Postgres checkpoint storage for langgraph
+nest_asyncio==1.6.0          # Asyncio support for nest_asyncio
+# -----------------------------------------------------------------------------
+# Async & HTTP Client Libraries
+# -----------------------------------------------------------------------------
+httpx>=0.24.0,<0.25.0         # Modern async HTTP client (compatible with supabase)
+aiohttp==3.11.7               # Async HTTP client/server framework
+requests==2.32.5              # Synchronous HTTP fallback
+
+# -----------------------------------------------------------------------------
+# Prediction Market APIs
+# -----------------------------------------------------------------------------
+py-clob-client==0.28.0      # Polymarket CLOB API official client
+web3>=7.0.0,<8.0.0          # Ethereum/Polygon blockchain interaction (7.x supports eth-account>=0.13)
+
+# -----------------------------------------------------------------------------
+# Cryptography (for Kalshi RSA signatures)
+# -----------------------------------------------------------------------------
+cryptography==44.0.0          # RSA signing for Kalshi API authentication
+
+# -----------------------------------------------------------------------------
+# Database - Supabase/PostgreSQL
+# -----------------------------------------------------------------------------
+supabase==2.3.0              # Supabase Python client
+asyncpg==0.30.0               # Fast async PostgreSQL driver
+psycopg2-binary==2.9.10       # PostgreSQL adapter (binary for ease)
+sqlalchemy==2.0.35            # SQL toolkit (optional for ORM)
+
+# -----------------------------------------------------------------------------
+# Scientific Computing & Math
+# -----------------------------------------------------------------------------
+numpy==1.26.4                 # Numerical computing library
+scipy==1.14.1                 # Scientific computing (for statistical functions)
+pandas==2.2.3                 # Data manipulation (optional for analysis)
+quantstats==0.0.62            # Trading performance metrics and analytics
+# empyrical==0.5.5              # Risk metrics (Sharpe, Sortino, etc.) - commented out due to installation issue
+
+# -----------------------------------------------------------------------------
+# Utilities
+# -----------------------------------------------------------------------------
+python-dotenv==1.0.1          # .env file support
+python-dateutil==2.9.0.post0  # Date parsing and manipulation
+pytz==2024.2                  # Timezone support
+typing-extensions==4.12.2     # Backport of typing features
+APScheduler==3.10.4           # Async cron jobs and task scheduling
+
+# -----------------------------------------------------------------------------
+# Web Scraping (Optional - for Valyu fallback) - REMOVED (installed in conda env)
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Dashboard & Visualization
+# -----------------------------------------------------------------------------
+plotly==5.18.0                # Interactive charts and visualizations
+
+# -----------------------------------------------------------------------------
+# Development Dependencies
+# -----------------------------------------------------------------------------
+# Testing
+pytest==8.3.3
+pytest-asyncio==0.24.0
+pytest-cov==6.0.0            
+
+# Code Quality
+black==24.10.0                # Code formatter
+ruff==0.7.4                   # Fast linter
+mypy==1.13.0                  # Static type checker
+
+# Development Tools
+rich==13.9.4                  # Beautiful terminal output
+web3
+eth_account
+websockets>=13.0.0
