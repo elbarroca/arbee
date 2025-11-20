@@ -6,8 +6,8 @@ import {
   WalletMinimal,
   Settings2,
   LogOut,
-  Plus,
-  Command
+  Command,
+  Crown
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -21,12 +21,12 @@ const recentChats = [
 ];
 
 const navItems = [
+  { name: 'Elite Wallets', icon: Crown, href: '/dashboard/elites' },
   { name: 'Market Scanner', icon: LayoutGrid, href: '/dashboard/scanner' },
   { name: 'Wallet Tracker', icon: WalletMinimal, href: '/dashboard/wallets' },
-  { name: 'Settings', icon: Settings2, href: '/dashboard/settings' },
 ];
 
-export function AppSidebar({ onNewChat }: { onNewChat?: () => void }) {
+export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -49,16 +49,6 @@ export function AppSidebar({ onNewChat }: { onNewChat?: () => void }) {
         </div>
       </div>
 
-      {/* 2. New Chat Action */}
-      <div className="p-4 pb-2">
-        <button 
-          onClick={onNewChat}
-          className="flex items-center gap-2 w-full px-3 py-2.5 bg-white text-black rounded-lg hover:bg-zinc-200 transition-all font-medium text-sm shadow-sm"
-        >
-          <Plus className="w-4 h-4" />
-          New Analysis
-        </button>
-      </div>
 
       {/* 3. Main Navigation */}
       <div className="px-3 py-2">
@@ -116,13 +106,23 @@ export function AppSidebar({ onNewChat }: { onNewChat?: () => void }) {
               Connected
             </div>
           </div>
-          <button
-            onClick={handleSignOut}
-            className="p-1 rounded-md hover:bg-zinc-800 transition-colors"
-            title="Sign Out"
-          >
-            <LogOut className="w-4 h-4 text-zinc-500 hover:text-zinc-300" />
-          </button>
+          <div className="flex gap-1">
+            <Link href="/dashboard/settings">
+              <button
+                className="p-1 rounded-md hover:bg-zinc-800 transition-colors"
+                title="Settings"
+              >
+                <Settings2 className="w-4 h-4 text-zinc-500 hover:text-zinc-300" />
+              </button>
+            </Link>
+            <button
+              onClick={handleSignOut}
+              className="p-1 rounded-md hover:bg-zinc-800 transition-colors"
+              title="Sign Out"
+            >
+              <LogOut className="w-4 h-4 text-zinc-500 hover:text-zinc-300" />
+            </button>
+          </div>
         </div>
       </div>
     </aside>
