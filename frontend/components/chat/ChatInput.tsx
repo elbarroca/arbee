@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { ArrowUp, Paperclip } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ChatInputProps {
   onSend: (text: string) => void;
@@ -12,11 +13,11 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
   const [input, setInput] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-resize textarea
+  // Auto-resize logic
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'inherit';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
+      textareaRef.current.style.height = 'inherit'; // Reset
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
     }
   }, [input]);
 
@@ -31,40 +32,55 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
     if (!input.trim() || disabled) return;
     onSend(input);
     setInput('');
-    // Reset height
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
     }
   };
 
+
   return (
     <div className="relative w-full">
-      <div className="relative flex items-end w-full p-3 bg-[#1e1e1e] border border-zinc-700/50 rounded-xl shadow-lg focus-within:ring-1 focus-within:ring-blue-500/50 focus-within:border-blue-500/50 transition-all">
+      <div className={cn(
+        "relative flex items-end w-full p-2 rounded-2xl border shadow-lg transition-all duration-200 bg-[#09090b]",
+        // Updated Styling: Neutral colors, no blue ring
+        "border-white/10",
+        "focus-within:border-zinc-600 focus-within:ring-1 focus-within:ring-zinc-700/50"
+      )}>
         
-        {/* Attachment Button (Visual only for now) */}
-        <button className="p-2 text-zinc-400 hover:text-white transition-colors mr-2">
+        {/* Attachment Icon */}
+        <button className="p-2.5 text-zinc-500 hover:text-zinc-300 transition-colors rounded-full hover:bg-zinc-800/50 self-end mb-0.5 mr-1">
           <Paperclip className="w-5 h-5" />
         </button>
 
+        {/* Text Area */}
         <textarea
           ref={textareaRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Send a message..."
+          placeholder="Ask about markets, wallets, or trade volume..."
           disabled={disabled}
           rows={1}
-          className="w-full max-h-[200px] bg-transparent border-none focus:ring-0 resize-none text-zinc-100 placeholder:text-zinc-500 py-2 scrollbar-none"
-          style={{ minHeight: '40px' }}
+          className="w-full max-h-[120px] bg-transparent border-none focus:ring-0 resize-none text-zinc-100 placeholder:text-zinc-600 py-3 px-1 scrollbar-none text-[15px] leading-relaxed"
+          style={{ minHeight: '48px' }}
         />
 
-        <button
-          onClick={handleSubmit}
-          disabled={!input.trim() || disabled}
-          className="p-2 ml-2 bg-white text-black rounded-lg hover:bg-zinc-200 disabled:bg-zinc-700 disabled:text-zinc-500 transition-all flex-shrink-0"
-        >
-          <ArrowUp className="w-5 h-5" />
-        </button>
+        {/* Right Action Area */}
+        <div className="flex items-center gap-1 self-end mb-0.5 ml-1">
+
+            <button
+                onClick={handleSubmit}
+                disabled={!input.trim() || disabled}
+                className={cn(
+                    "p-2 rounded-xl transition-all flex-shrink-0 flex items-center justify-center w-10 h-10",
+                    input.trim() 
+                        ? "bg-white text-black hover:bg-zinc-200 shadow-sm" 
+                        : "bg-zinc-800/50 text-zinc-600 cursor-not-allowed"
+                )}
+            >
+                <ArrowUp className="w-5 h-5" />
+            </button>
+        </div>
       </div>
     </div>
   );

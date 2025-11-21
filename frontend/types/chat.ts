@@ -1,3 +1,5 @@
+// FILE: frontend/types/chat.ts
+
 export interface ToolCall {
   id: string;
   name: string;
@@ -13,7 +15,7 @@ export interface ToolInvocation {
   result?: unknown;
 }
 
-// Widget data types
+// Widget data types (Existing...)
 export interface ElitePosition {
   market: string;
   outcome: string;
@@ -68,14 +70,17 @@ export interface ChatMessage {
   content: string;
   isStreaming?: boolean;
   timestamp: number;
-
-  // New: Track the reasoning steps
+  
+  // Reasoning & Tools
   toolInvocations?: ToolInvocation[];
-  thoughts?: string[]; // Reasoning/thinking before tool calls
-
-  // New: The final visual widget
+  thoughts?: string[]; // The "Thinking..." steps
+  
+  // Widgets
   widgetType?: WidgetType;
   widgetData?: WidgetData;
+
+  // Voice
+  audioUrl?: string; // For playback if needed
 }
 
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';

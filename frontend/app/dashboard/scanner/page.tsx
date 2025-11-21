@@ -144,11 +144,11 @@ export default function ScannerPage() {
 
   return (
     <div className="flex flex-col h-full bg-[#050505] relative overflow-hidden">
-      <div className="flex-1 overflow-y-auto px-6 md:px-8 py-8">
-        
+      <div className="flex-1 overflow-y-auto px-4 md:px-6 lg:px-8 py-6 md:py-8">
+
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white mb-2">Market Scanner</h1>
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-xl md:text-2xl font-bold text-white mb-2">Market Scanner</h1>
           <p className="text-zinc-400 text-sm">Real-time analysis of active liquidity and volume across the ecosystem.</p>
         </div>
 
@@ -156,11 +156,11 @@ export default function ScannerPage() {
         <MarketCharts stats={stats} />
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 border-b border-white/5">
+        <div className="flex gap-2 mb-4 md:mb-6 border-b border-white/5">
           <button
             onClick={() => setViewMode('markets')}
             className={cn(
-              "px-4 py-2 text-sm font-medium transition-colors border-b-2",
+              "px-3 md:px-4 py-2 text-sm font-medium transition-colors border-b-2 whitespace-nowrap",
               viewMode === 'markets'
                 ? "text-white border-blue-500"
                 : "text-zinc-400 border-transparent hover:text-white"
@@ -171,7 +171,7 @@ export default function ScannerPage() {
           <button
             onClick={() => setViewMode('events')}
             className={cn(
-              "px-4 py-2 text-sm font-medium transition-colors border-b-2",
+              "px-3 md:px-4 py-2 text-sm font-medium transition-colors border-b-2 whitespace-nowrap",
               viewMode === 'events'
                 ? "text-white border-blue-500"
                 : "text-zinc-400 border-transparent hover:text-white"
@@ -182,9 +182,9 @@ export default function ScannerPage() {
         </div>
 
         {/* Filter Toolbar */}
-        <div className="flex flex-col gap-4 mb-6">
-            <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
-                <div className="flex flex-col sm:flex-row gap-3 w-full xl:w-auto">
+        <div className="flex flex-col gap-4 mb-4 md:mb-6">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
                     {/* Search */}
                     <div className="relative w-full sm:w-96 group">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-hover:text-zinc-300 transition-colors" />
@@ -307,47 +307,46 @@ export default function ScannerPage() {
         </div>
 
         {/* Data Table */}
-        <div className="bg-zinc-900/20 border border-white/5 rounded-xl overflow-hidden min-h-[400px]">
-            <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                    <thead className="bg-white/[0.02] text-[11px] text-zinc-500 uppercase tracking-wider font-semibold sticky top-0 z-10">
-                        <tr>
-                            {viewMode === 'markets' ? (
-                                <>
-                                    <th className="p-4 pl-6 min-w-[300px]">Market</th>
-                                    <th className="p-4">Category</th>
-                                    <th className="p-4 text-right cursor-pointer hover:text-white" onClick={() => handleSort('p_yes')}>
-                                        Avg Price <ArrowUpDown className="w-3 h-3 inline" />
-                                    </th>
-                                    <th className="p-4 text-right cursor-pointer hover:text-white" onClick={() => handleSort('volume_24h')}>
-                                        24h Vol <ArrowUpDown className="w-3 h-3 inline" />
-                                    </th>
-                                    <th className="p-4 text-right cursor-pointer hover:text-white" onClick={() => handleSort('total_volume')}>
-                                        Total Vol <ArrowUpDown className="w-3 h-3 inline" />
-                                    </th>
-                                    <th className="p-4 text-right cursor-pointer hover:text-white" onClick={() => handleSort('liquidity')}>
-                                        Liquidity <ArrowUpDown className="w-3 h-3 inline" />
-                                    </th>
-                                    <th className="p-4 text-right">Deadline</th>
-                                    <th className="p-4"></th>
-                                </>
-                            ) : (
-                                <>
-                                    <th className="p-4 pl-6 min-w-[300px]">Event</th>
-                                    <th className="p-4">Category</th>
-                                    <th className="p-4 text-right">Markets</th>
-                                    <th className="p-4 text-right cursor-pointer hover:text-white" onClick={() => handleSort('total_volume')}>
-                                        Total Vol <ArrowUpDown className="w-3 h-3 inline" />
-                                    </th>
-                                    <th className="p-4 text-right cursor-pointer hover:text-white" onClick={() => handleSort('total_liquidity')}>
-                                        Liquidity <ArrowUpDown className="w-3 h-3 inline" />
-                                    </th>
-                                    <th className="p-4 text-right">Deadline</th>
-                                    <th className="p-4"></th>
-                                </>
-                            )}
-                        </tr>
-                    </thead>
+        <div className="bg-zinc-900/20 border border-white/5 rounded-xl overflow-x-auto min-h-[400px]">
+            <table className="w-full text-left border-collapse">
+                <thead className="bg-zinc-900/30 text-[11px] text-zinc-500 uppercase tracking-wider font-semibold sticky top-0 z-10 backdrop-blur-sm">
+                    <tr>
+                        {viewMode === 'markets' ? (
+                            <>
+                                <th className="p-4 pl-6 min-w-[300px]">Market</th>
+                                <th className="p-4 min-w-[120px]">Category</th>
+                                <th className="p-4 text-right cursor-pointer hover:text-white min-w-[110px]" onClick={() => handleSort('p_yes')}>
+                                    Avg Price <ArrowUpDown className="w-3 h-3 inline" />
+                                </th>
+                                <th className="p-4 text-right cursor-pointer hover:text-white min-w-[120px]" onClick={() => handleSort('volume_24h')}>
+                                    24h Vol <ArrowUpDown className="w-3 h-3 inline" />
+                                </th>
+                                <th className="p-4 text-right cursor-pointer hover:text-white min-w-[120px]" onClick={() => handleSort('total_volume')}>
+                                    Total Vol <ArrowUpDown className="w-3 h-3 inline" />
+                                </th>
+                                <th className="p-4 text-right cursor-pointer hover:text-white min-w-[120px]" onClick={() => handleSort('liquidity')}>
+                                    Liquidity <ArrowUpDown className="w-3 h-3 inline" />
+                                </th>
+                                <th className="p-4 text-right min-w-[110px]">Deadline</th>
+                                <th className="p-4 min-w-[60px]"></th>
+                            </>
+                        ) : (
+                            <>
+                                <th className="p-4 pl-6 min-w-[300px]">Event</th>
+                                <th className="p-4 min-w-[120px]">Category</th>
+                                <th className="p-4 text-right min-w-[100px]">Markets</th>
+                                <th className="p-4 text-right cursor-pointer hover:text-white min-w-[120px]" onClick={() => handleSort('total_volume')}>
+                                    Total Vol <ArrowUpDown className="w-3 h-3 inline" />
+                                </th>
+                                <th className="p-4 text-right cursor-pointer hover:text-white min-w-[120px]" onClick={() => handleSort('total_liquidity')}>
+                                    Liquidity <ArrowUpDown className="w-3 h-3 inline" />
+                                </th>
+                                <th className="p-4 text-right min-w-[110px]">Deadline</th>
+                                <th className="p-4 min-w-[60px]"></th>
+                            </>
+                        )}
+                    </tr>
+                </thead>
                     <tbody className="divide-y divide-white/5 text-sm">
                         {loading ? (
                             <tr>
@@ -476,7 +475,6 @@ export default function ScannerPage() {
                         )}
                     </tbody>
                 </table>
-            </div>
         </div>
 
       </div>

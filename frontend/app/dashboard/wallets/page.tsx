@@ -139,21 +139,21 @@ export default function WalletsPage() {
 
       {/* 3. Main Table */}
       <div className="flex-1 overflow-y-auto px-6 md:px-8 pb-8">
-        <div className="bg-zinc-900/20 border border-white/5 rounded-2xl overflow-hidden min-h-[400px] flex flex-col">
+        <div className="bg-zinc-900/20 border border-white/5 rounded-2xl overflow-x-auto min-h-[400px] flex flex-col">
           <table className="w-full text-left border-collapse">
-            <thead className="bg-white/[0.02] sticky top-0 z-10 backdrop-blur-md">
+            <thead className="bg-zinc-900/30 sticky top-0 z-10 backdrop-blur-md">
               <tr className="text-[11px] text-zinc-500 uppercase tracking-wider font-semibold border-b border-white/5">
-                <th className="p-4 pl-6 font-medium">Wallet</th>
-                <th className="p-4 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('tier')}>Tier</th>
-                <th className="p-4 text-right cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('win_rate')}>Win Rate</th>
-                <th className="p-4 text-right cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('n_positions')}>Trades</th>
-                <th className="p-4 text-right cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('total_volume')}>Volume</th>
-                <th className="p-4 text-right cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('realized_pnl')}>
+                <th className="p-4 pl-6 font-medium min-w-[200px]">Wallet</th>
+                <th className="p-4 cursor-pointer hover:text-white transition-colors min-w-[80px]" onClick={() => handleSort('tier')}>Tier</th>
+                <th className="p-4 text-right cursor-pointer hover:text-white transition-colors min-w-[120px]" onClick={() => handleSort('win_rate')}>Win Rate</th>
+                <th className="p-4 text-right cursor-pointer hover:text-white transition-colors min-w-[100px]" onClick={() => handleSort('n_positions')}>Trades</th>
+                <th className="p-4 text-right cursor-pointer hover:text-white transition-colors min-w-[140px]" onClick={() => handleSort('total_volume')}>Volume</th>
+                <th className="p-4 text-right cursor-pointer hover:text-white transition-colors min-w-[140px]" onClick={() => handleSort('realized_pnl')}>
                    <div className="flex items-center justify-end gap-1">
                       Realized PnL <ArrowUpDown className="w-3 h-3" />
                    </div>
                 </th>
-                <th className="p-4 text-right cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('roi')}>ROI</th>
+                <th className="p-4 text-right cursor-pointer hover:text-white transition-colors min-w-[100px]" onClick={() => handleSort('roi')}>ROI</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5 text-sm relative">

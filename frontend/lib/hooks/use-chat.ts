@@ -35,35 +35,50 @@ export function useChat() {
 
     clientRef.current = client;
 
-    // Event Handling
+    // 1. Connection Status
     client.on('statusChange', (s: string) => setStatus(s as ConnectionStatus));
 
-    // Handle thought events (reasoning before tool calls)
+    // 2. Handle "Thinking/Reasoning" Events
+    // This captures the AI's internal monologue before it decides to call a tool
     client.on('thought', (thought: string) => {
       let targetId = currentMsgId.current;
+      
+      // If no message exists yet, create one to hold the thought
       if (!targetId) {
         targetId = crypto.randomUUID();
         currentMsgId.current = targetId;
         setMessages(prev => [...prev, { 
-          id: targetId!, role: 'assistant', content: '', timestamp: Date.now(), toolInvocations: [], thoughts: []
+          id: targetId!, 
+          role: 'assistant', 
+          content: '', 
+          timestamp: Date.now(), 
+          toolInvocations: [], 
+          thoughts: [thought] // Init with thought
         }]);
+      } else {
+        // Append thought to existing message
+        setMessages(prev => prev.map(msg => {
+          if (msg.id === targetId) {
+            return { ...msg, thoughts: [...(msg.thoughts || []), thought] };
+          }
+          return msg;
+        }));
       }
-      setMessages(prev => prev.map(msg => {
-        if (msg.id === targetId) {
-          return { ...msg, thoughts: [...(msg.thoughts || []), thought] };
-        }
-        return msg;
-      }));
     });
 
+    // 3. Standard Text Streaming
     client.on('messageStart', () => {
       setIsTyping(true);
-      // Only create a new ID if we aren't already in the middle of a tool sequence
       if (!currentMsgId.current) {
         const id = crypto.randomUUID();
         currentMsgId.current = id;
         setMessages(prev => [...prev, { 
-          id, role: 'assistant', content: '', isStreaming: true, timestamp: Date.now(), toolInvocations: []
+          id, 
+          role: 'assistant', 
+          content: '', 
+          isStreaming: true, 
+          timestamp: Date.now(), 
+          toolInvocations: [] 
         }]);
       }
     });
@@ -83,25 +98,29 @@ export function useChat() {
       currentMsgId.current = null;
     });
 
-    // --- ROBUST TOOL HANDLING ---
+    // 4. TOOL HANDLING & WIDGET TRIGGERING
     client.on('toolCall', async (data: unknown) => {
       const toolCall = data as ToolCall;
       const toolFn = toolRegistry[toolCall.name];
       let result = "";
 
-      // 1. Ensure we have a message bubble to show the "Invoking..." log
+      // A. Ensure we have a message bubble to attach the tool log to
       let targetId = currentMsgId.current;
       if (!targetId) {
          targetId = crypto.randomUUID();
          currentMsgId.current = targetId;
-         // Create placeholder assistant message
          setIsTyping(true);
          setMessages(prev => [...prev, { 
-            id: targetId!, role: 'assistant', content: '', timestamp: Date.now(), toolInvocations: [], isStreaming: true
+            id: targetId!, 
+            role: 'assistant', 
+            content: '', 
+            timestamp: Date.now(), 
+            toolInvocations: [], 
+            isStreaming: true
          }]);
       }
 
-      // 2. Update UI to "Pending"
+      // B. Set Tool Status: Pending
       setMessages(prev => prev.map(msg => {
          if (msg.id === targetId) {
             const newInvocations = [...(msg.toolInvocations || []), { 
@@ -114,10 +133,10 @@ export function useChat() {
       
       try {
         if (toolFn) {
-          // 3. Execute
+          // C. Execute the Tool
           result = await toolFn(toolCall.args);
           
-          // 4. Update UI to "Complete"
+          // D. Set Tool Status: Complete
           setMessages(prev => prev.map(msg => {
              if (msg.id === targetId) {
                 const updatedInvocations = (msg.toolInvocations || []).map(inv => 
@@ -128,21 +147,28 @@ export function useChat() {
              return msg;
           }));
 
-          // 5. Check for Widget Data
+          // E. WIDGET TRIGGER LOGIC
+          // We immediately attempt to parse the tool result. If it's a valid widget payload,
+          // we inject a NEW system message into the stream immediately.
           try {
             const parsed = JSON.parse(result);
+            
             if (parsed && parsed.type && ['positions', 'funds', 'trade_result', 'pnl'].includes(parsed.type)) {
-               setMessages(prev => [...prev, {
-                 id: crypto.randomUUID(),
-                 role: 'system',
-                 content: '', 
-                 timestamp: Date.now(),
-                 widgetType: parsed.type as 'positions' | 'funds' | 'trade_result' | 'pnl',
-                 widgetData: parsed
-               }]);
+               // Use a small timeout to ensure the "Complete" animation renders first
+               setTimeout(() => {
+                 const widgetId = crypto.randomUUID();
+                 setMessages(prev => [...prev, {
+                   id: widgetId,
+                   role: 'system', // System role handles pure widget rendering
+                   content: '', 
+                   timestamp: Date.now(),
+                   widgetType: parsed.type,
+                   widgetData: parsed
+                 }]);
+               }, 100);
             }
           } catch {
-            // Not JSON or no widget type - that's okay
+            // Result was plain text, not JSON. That's fine, no widget to trigger.
           }
 
         } else {
@@ -150,7 +176,8 @@ export function useChat() {
         }
       } catch (err: unknown) {
         result = JSON.stringify({ error: err instanceof Error ? err.message : String(err) });
-        // Update UI to "Error"
+        
+        // F. Set Tool Status: Error
         setMessages(prev => prev.map(msg => {
            if (msg.id === targetId) {
               const updatedInvocations = (msg.toolInvocations || []).map(inv => 
@@ -162,6 +189,7 @@ export function useChat() {
         }));
       }
 
+      // G. Send result back to AI so conversation continues
       await client.sendToolResult(toolCall.id, toolCall.name, result);
     });
 
@@ -176,6 +204,7 @@ export function useChat() {
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim() || !clientRef.current) return;
     
+    // Add user message immediately
     setMessages(prev => [...prev, { 
       id: crypto.randomUUID(), role: 'user', content: text, timestamp: Date.now()
     }]);
@@ -183,12 +212,10 @@ export function useChat() {
     await clientRef.current.sendMessage(text);
   }, []);
 
-  // NEW: Reset Functionality
   const resetSession = useCallback(() => {
-    setMessages([]); // Clear UI
+    setMessages([]);
     if (clientRef.current) {
-      console.log("🔄 Resetting Convo Session...");
-      clientRef.current.resetChat(); // SDK Method: Disconnects, clears, reconnects
+      clientRef.current.resetChat(); 
     }
   }, []);
 

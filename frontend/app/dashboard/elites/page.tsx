@@ -188,18 +188,18 @@ export default function EliteWalletsPage() {
                   </div>
                </div>
 
-               <div className="bg-zinc-900/20 border border-white/5 rounded-xl overflow-hidden">
+               <div className="bg-zinc-900/20 border border-white/5 rounded-xl overflow-x-auto">
                   <table className="w-full text-left border-collapse">
-                     <thead className="bg-white/[0.02] text-[11px] text-zinc-500 uppercase font-semibold sticky top-0">
+                     <thead className="bg-zinc-900/20 text-[11px] text-zinc-500 uppercase font-semibold sticky top-0 z-10 backdrop-blur-sm">
                         <tr>
-                           <th className="p-4 pl-6">Category</th>
-                           <th className="p-4 text-right">Elite Traders</th>
-                           <th className="p-4 text-right">Total Traders</th>
-                           <th className="p-4 text-right">Events Tracked</th>
-                           <th className="p-4 text-right">Elite ROI</th>
-                           <th className="p-4 text-right">Avg ROI</th>
-                           <th className="p-4 text-right">Edge</th>
-                           <th className="p-4 text-right">Elite Vol Share</th>
+                           <th className="p-4 pl-6 min-w-[180px]">Category</th>
+                           <th className="p-4 text-right min-w-[120px]">Elite Traders</th>
+                           <th className="p-4 text-right min-w-[120px]">Total Traders</th>
+                           <th className="p-4 text-right min-w-[130px]">Events Tracked</th>
+                           <th className="p-4 text-right min-w-[100px]">Elite ROI</th>
+                           <th className="p-4 text-right min-w-[100px]">Avg ROI</th>
+                           <th className="p-4 text-right min-w-[100px]">Edge</th>
+                           <th className="p-4 text-right min-w-[140px]">Elite Vol Share</th>
                         </tr>
                      </thead>
                      <tbody className="divide-y divide-white/5 text-sm">
@@ -364,16 +364,16 @@ export default function EliteWalletsPage() {
                 </div>
             </div>
 
-            <div className="bg-zinc-900/20 border border-white/5 rounded-xl overflow-hidden flex-1">
+            <div className="bg-zinc-900/20 border border-white/5 rounded-xl overflow-x-auto flex-1">
                 <table className="w-full text-left border-collapse">
-                    <thead className="bg-white/[0.02] text-[11px] text-zinc-500 uppercase font-semibold">
+                    <thead className="bg-zinc-900/20 text-[11px] text-zinc-500 uppercase font-semibold sticky top-0 z-10 backdrop-blur-sm">
                         <tr>
-                            <th className="p-4 pl-6">Rank</th>
-                            <th className="p-4">Wallet Address</th>
-                            <th className="p-4 text-right">Win Rate</th>
-                            <th className="p-4 text-right">ROI</th>
-                            <th className="p-4 text-right">Total Volume</th>
-                            <th className="p-4 text-center">Score</th>
+                            <th className="p-4 pl-6 min-w-[80px]">Rank</th>
+                            <th className="p-4 min-w-[200px]">Wallet Address</th>
+                            <th className="p-4 text-right min-w-[120px]">Win Rate</th>
+                            <th className="p-4 text-right min-w-[100px]">ROI</th>
+                            <th className="p-4 text-right min-w-[140px]">Total Volume</th>
+                            <th className="p-4 text-center min-w-[100px]">Score</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5 text-sm">
